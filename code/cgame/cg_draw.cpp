@@ -4602,11 +4602,6 @@ static void CG_Draw2D( void )
 
 		CG_DrawAmmoWarning();
 
-		if ( cg.noArmorTextTime > cg.time )
-		{
-			CG_DrawShieldWarning();
-		}
-
 		//CROSSHAIR is now done from the crosshair ent trace
 		//if ( !cg.renderingThirdPerson && !cg_dynamicCrosshair.integer ) // disruptor draws it's own crosshair artwork; binocs draw nothing; third person draws its own crosshair
 		//{
@@ -4699,6 +4694,13 @@ static void CG_Draw2D( void )
 			
 			cgi_R_Font_DrawString(x_pos, y_pos, text,  colorTable[CT_LTRED1], cgs.media.qhFontMedium, -1, 1.0f);
 		}
+	}
+
+	if ( cg.noArmorTextTime > cg.time )
+	{
+		gi.Cvar_VariableStringBuffer( "cg_NoArmorText", text, sizeof(text) );
+		
+		CG_DrawShieldWarning();
 	}
 
 	if (cg.weaponPickupTextTime	> cg.time )

@@ -123,6 +123,7 @@ void CG_ItemPickup( int itemNum, qboolean bHadItem )
 					if ( g_spskill->integer >= 2 
 						&& cg.snap->ps.stats[STAT_ARMOR] <= 0 )
 					{
+						cgi_Cvar_Set( "cg_NoArmorText", va("%s %s\n", text, data));
 						cg.noArmorTextTime = cg.time + 5000;
 					}
 				}
