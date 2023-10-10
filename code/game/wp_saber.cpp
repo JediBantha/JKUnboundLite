@@ -10874,6 +10874,7 @@ qboolean WP_CheckBreakControl( gentity_t *self )
 	{
 		return qfalse;
 	}
+
 	if ( !self->s.number )
 	{//player
 		if ( self->client && self->client->ps.forcePowerLevel[FP_TELEPATHY] > FORCE_LEVEL_3 )
@@ -10881,9 +10882,11 @@ qboolean WP_CheckBreakControl( gentity_t *self )
 			if ( self->client->ps.viewEntity > 0 && self->client->ps.viewEntity < ENTITYNUM_WORLD )
 			{//we are in a viewentity
 				gentity_t *controlled = &g_entities[self->client->ps.viewEntity];
+
 				if ( controlled->NPC && controlled->NPC->controlledTime > level.time )
 				{//it is an NPC we controlled
 					//clear it and return
+					self->client->ps.forcePowersActive &= ~( 1 << FP_TELEPATHY );
 					G_ClearViewEntity( self );
 					return qtrue;
 				}
@@ -10895,19 +10898,24 @@ qboolean WP_CheckBreakControl( gentity_t *self )
 		if ( self->NPC && self->NPC->controlledTime > level.time )
 		{//being controlled
 			gentity_t *controller = &g_entities[0];
+			
 			if ( controller->client && controller->client->ps.viewEntity == self->s.number )
 			{//we are being controlled by player
 				if ( controller->client->ps.forcePowerLevel[FP_TELEPATHY] > FORCE_LEVEL_3 )
 				{//control-level mind trick
 					//clear the control and return
+					controller->client->ps.forcePowersActive &= ~( 1 << FP_TELEPATHY );
 					G_ClearViewEntity( controller );
+
 					return qtrue;
 				}
 			}
 		}
 	}
+	
 	return qfalse;
 }
+
 extern bool	Pilot_AnyVehiclesRegistered();
 
 void ForceTelepathyRadius( gentity_t *self, gentity_t *traceEnt )
@@ -11233,9 +11241,10 @@ void ForceTelepathy( gentity_t *self )
 			}
 			else if ( telepathyLevel > FORCE_LEVEL_3 )
 			{
-				if ( telepathyLevel > 8 )
+				if ( level.alertEvents[level.numAlertEvents].level < AEL_DISCOVERED )
 				{//control them, even jedi
 					G_SetViewEntity( self, traceEnt );
+					self->client->ps.forcePowersActive	|= ( 1 << FP_TELEPATHY );
 					traceEnt->NPC->controlledTime = level.time + levelDuration;
 				}
 				else
@@ -15065,6 +15074,30 @@ static void WP_ForcePowerRun( gentity_t *self, forcePowers_t forcePower, usercmd
 	case FP_PULL:
 		break;
 	case FP_TELEPATHY:
+		if ( self->client->ps.forcePowerCostDebounce[forcePower] < level.time )
+		{
+			int	telepathyLevel = self->client->ps.forcePowerLevel[forcePower];
+			int	telepathyDebounce = (100 + (25 * (telepathyLevel - 3)));
+
+			if ( telepathyDebounce > Q3_INFINITE )
+			{
+				telepathyDebounce = Q3_INFINITE;
+                   			}
+
+			WP_ForcePowerDrain( self, forcePower, 1 );
+
+			if ( self->client->ps.forcePower <= 0 )
+			{
+				if ( self->client->ps.forcePower < 0 )
+				{
+					self->client->ps.forcePower = 0;
+				}
+
+				WP_ForcePowerStop( self, forcePower );
+			}
+
+			self->client->ps.forcePowerCostDebounce[forcePower] = level.time + telepathyDebounce;
+		}
 		break;
 	case FP_GRIP:
 		if ( !WP_ForcePowerAvailable( self, FP_GRIP, 0 ) || (!self->s.number && !(cmd->buttons & BUTTON_FORCEGRIP)) )
