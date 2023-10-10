@@ -365,8 +365,9 @@ static void CG_DrawForcePower(const centity_t *cent,const int xPos,const int yPo
 	qboolean	flash=qfalse;
 	vec4_t		calcColor;
 	float		value,extra=0,inc,percent;
+	centity_t	*actualEnt = &cg_entities[0];
 
-	if ( !cent->gent->client->ps.forcePowersKnown )
+	if ( !actualEnt->gent->client->ps.forcePowersKnown )
 	{
 		return;
 	}
@@ -402,12 +403,12 @@ static void CG_DrawForcePower(const centity_t *cent,const int xPos,const int yPo
 //		return;
 //	}
 
-	inc = (float)  cent->gent->client->ps.forcePowerMax / MAX_HUD_TICS;
-	value = cent->gent->client->ps.forcePower;
-	if ( value > cent->gent->client->ps.forcePowerMax )
+	inc = (float)  actualEnt->gent->client->ps.forcePowerMax / MAX_HUD_TICS;
+	value = actualEnt->gent->client->ps.forcePower;
+	if ( value > actualEnt->gent->client->ps.forcePowerMax )
 	{//supercharged with force
-		extra = value - cent->gent->client->ps.forcePowerMax;
-		value = cent->gent->client->ps.forcePowerMax;
+		extra = value - actualEnt->gent->client->ps.forcePowerMax;
+		value = actualEnt->gent->client->ps.forcePowerMax;
 	}
 
 	for (i=MAX_HUD_TICS-1;i>=0;i--)
@@ -415,7 +416,7 @@ static void CG_DrawForcePower(const centity_t *cent,const int xPos,const int yPo
 		if ( extra )
 		{//supercharged
 			memcpy(calcColor, colorTable[CT_WHITE], sizeof(vec4_t));
-			percent = 0.75f + (sin( cg.time * 0.005f )*((extra/cent->gent->client->ps.forcePowerMax)*0.25f));
+			percent = 0.75f + (sin( cg.time * 0.005f )*((extra/actualEnt->gent->client->ps.forcePowerMax)*0.25f));
 			
 			if ( percent > 1.75f )
 			{
@@ -480,7 +481,7 @@ static void CG_DrawForcePower(const centity_t *cent,const int xPos,const int yPo
 		otherHUDBits[OHB_FORCEAMOUNT].xPos,
 		otherHUDBits[OHB_FORCEAMOUNT].yPos,
 		3,
-		cent->gent->client->ps.forcePower,
+		actualEnt->gent->client->ps.forcePower,//cent->gent->client->ps.forcePower,
 		otherHUDBits[OHB_FORCEAMOUNT].width,
 		otherHUDBits[OHB_FORCEAMOUNT].height,
 		NUM_FONT_SMALL,
@@ -563,8 +564,14 @@ static void CG_DrawAmmo(const centity_t	*cent,const int xPos,const int yPos)
 	int			i;
 	vec4_t		calcColor;
 	float		currValue=0,inc;
+	centity_t	*player = &cg_entities[0];
 
 	if (!cent->currentState.weapon ) // We don't have a weapon right now
+	{
+		return;
+	}
+
+	if ( player->gent->client->ps.viewEntity > 0 )
 	{
 		return;
 	}
@@ -4199,6 +4206,8 @@ static qboolean CG_RenderingFromMiscCamera()
 			else
 			{
 				overlay = "gfx/2d/mindcontrol";
+
+				CG_DrawHUD( &cg_entities[cg.snap->ps.viewEntity] );
 			}
 
 			CG_DrawPic( 0, 0, 640, 480, cgi_R_RegisterShader( overlay ));

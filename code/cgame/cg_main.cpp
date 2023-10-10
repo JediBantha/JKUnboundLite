@@ -1384,9 +1384,11 @@ static void CG_RegisterGraphics( void ) {
 	//cgi_R_RegisterShader( "gfx/effects/irid_shield" ); // for galak, but he doesn't have his own weapon so I can't register the shader there.
 
 	//interface
-	for ( i = 0 ; i < NUM_CROSSHAIRS ; i++ ) {
+	for ( i = 0 ; i < NUM_CROSSHAIRS ; i++ ) 
+	{
 		cgs.media.crosshairShader[i] = cgi_R_RegisterShaderNoMip( va("gfx/2d/crosshair%c", 'a'+i) );
 	}
+	
 	cgs.media.backTileShader		= cgi_R_RegisterShader( "gfx/2d/backtile" );
 //	cgs.media.noammoShader			= cgi_R_RegisterShaderNoMip( "gfx/hud/noammo");
 	cgs.media.weaponIconBackground	= cgi_R_RegisterShaderNoMip( "gfx/hud/background");
@@ -1452,6 +1454,7 @@ static void CG_RegisterGraphics( void ) {
 	cgi_R_RegisterShader( "gfx/2d/droid_view_green" );
 	cgi_R_RegisterShader( "gfx/2d/droid_view_red" );
 	cgi_R_RegisterShader( "gfx/2d/droid_view_yellow" );
+
 	cgi_R_RegisterShader( "gfx/2d/mindcontrol" );
 
 	cgs.media.useableHint = cgi_R_RegisterShader("gfx/hud/useableHint");
@@ -4444,7 +4447,7 @@ const char *ForcePowerLevelDesc( int forcePower )
 			}
 			else
 			{
-				levelDesc = va( "Rank %i - Jedi can take complete control of an enemy for %i seconds, or distract enemies that have not noticed them by using mind trick on a nearby surface.", powerLevel, charmDuration );
+				levelDesc = va( "Rank %i - Jedi can take complete control of an enemy for %i seconds while undiscovered, turn enemies within %i centimeters of the target into allies for %i seconds while in combat, or distract enemies that have not noticed them by using mind trick on a nearby surface.", powerLevel, charmDuration, charmRange, charmDuration  );
 			}
 		}
 		break;
@@ -4669,6 +4672,7 @@ const char *ForcePowerLevelDesc( int forcePower )
 			if ( powerLevel < 5 )
 			{
 				gripSpeed = "Moderate";
+				levelDesc = va( "Rank %i - Jedi can lift one enemy off the ground, do %i-%i damage, and smash the enemy into surfaces or use the enemy as a shield as with rank %i.\nDamage Rate: %i-%i Milliseconds\nMovement Speed: %s", powerLevel, powerLevel, gripDmg, (powerLevel - 1), minRate, maxRate, gripSpeed );
 			}
 			else if ( powerLevel == 5 )
 			{
