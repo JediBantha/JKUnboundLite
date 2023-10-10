@@ -1611,7 +1611,8 @@ static qboolean CanUseInfrontOfPartOfLevel(gentity_t* ent )	//originally from VV
 	vec3_t		mins, maxs;
 	const vec3_t	range = { 40, 40, 52 };
 
-	if ( !ent->client ) {
+	if ( !ent->client ) 
+	{
 		return qfalse;
 	}
 
@@ -1624,21 +1625,28 @@ static qboolean CanUseInfrontOfPartOfLevel(gentity_t* ent )	//originally from VV
 	VectorAdd( ent->client->ps.origin, ent->mins, mins );
 	VectorAdd( ent->client->ps.origin, ent->maxs, maxs );
 
-	for ( i=0 ; i<num ; i++ ) {
+	for ( i=0 ; i<num ; i++ ) 
+	{
 		hit = touch[i];
 
-		if ( (hit->e_TouchFunc == touchF_NULL) && (ent->e_TouchFunc == touchF_NULL) ) {
-			continue;
-		}
-		if ( !( hit->contents & CONTENTS_TRIGGER ) ) {
-			continue;
-		}
-
-		if ( !gi.EntityContact( mins, maxs, hit ) ) {
+		if ( (hit->e_TouchFunc == touchF_NULL) 
+			&& (ent->e_TouchFunc == touchF_NULL) ) 
+		{
 			continue;
 		}
 
-		if ( hit->e_TouchFunc != touchF_NULL ) {
+		if ( !( hit->contents & CONTENTS_TRIGGER ) ) 
+		{
+			continue;
+		}
+
+		if ( !gi.EntityContact( mins, maxs, hit ) ) 
+		{
+			continue;
+		}
+
+		if ( hit->e_TouchFunc != touchF_NULL ) 
+		{
 			switch (hit->e_TouchFunc )
 			{
 			case touchF_Touch_Multi:
@@ -1646,6 +1654,7 @@ static qboolean CanUseInfrontOfPartOfLevel(gentity_t* ent )	//originally from VV
 				{
 					return qtrue;
 				}
+
 				continue;
 				break;
 			default:
@@ -1653,6 +1662,7 @@ static qboolean CanUseInfrontOfPartOfLevel(gentity_t* ent )	//originally from VV
 			}
 		}
 	}
+
 	return qfalse;
 }
 
@@ -1771,7 +1781,8 @@ qboolean CanUseInfrontOf(gentity_t *ent)
 		return qtrue;
 	}
 
-	if (CanUseInfrontOfPartOfLevel(ent)) {
+	if (CanUseInfrontOfPartOfLevel(ent)) 
+	{
 		return qtrue;
 	}
 

@@ -2085,6 +2085,18 @@ void shield_power_converter_use( gentity_t *self, gentity_t *other, gentity_t *a
 
 		if ( dif > 0 && self->count )	// Already at full armor?..and do I even have anything to give
 		{
+			if ( g_spskill->integer >= 2 
+				&& activator->client->ps.stats[STAT_ARMOR] <= 0 || 
+				activator->client->ps.stats[STAT_ARMOR] >= maxHealth )
+			{
+				shieldConDone = qtrue;
+
+				if ( activator->client->ps.stats[STAT_ARMOR] <= 0 )
+				{
+					cg.noArmorTextTime = cg.time + 5000;
+				}
+			}
+
 			if ( dif > giveAmount )
 			{
 				add = giveAmount;
@@ -2099,17 +2111,14 @@ void shield_power_converter_use( gentity_t *self, gentity_t *other, gentity_t *a
 				add = self->count;
 			}
 
-			self->count -= add;
+			if ( !shieldConDone )
+			{
+				self->count -= add;
 
-			activator->client->ps.stats[STAT_ARMOR] += add;
+				activator->client->ps.stats[STAT_ARMOR] += add;
 
-			self->s.loopSound = G_SoundIndex( "sound/interface/shieldcon_run.wav" );
-		}
-
-		if ( g_spskill->integer >= 2 && activator->client->ps.stats[STAT_ARMOR] <= 0 || 
-			activator->client->ps.stats[STAT_ARMOR] >= maxHealth )
-		{
-			shieldConDone = qtrue;
+				self->s.loopSound = G_SoundIndex( "sound/interface/shieldcon_run.wav" );
+			}
 		}
 
 		if ( self->count <= 0 )
@@ -2130,12 +2139,6 @@ void shield_power_converter_use( gentity_t *self, gentity_t *other, gentity_t *a
 			G_Sound( self, G_SoundIndex( "sound/interface/shieldcon_done.mp3" ));
 			self->setTime = level.time + 1000; // extra debounce so that the sounds don't overlap too much
 			self->s.loopSound = 0;
-
-			if ( g_spskill->integer >= 2 
-				&& activator->client->ps.stats[STAT_ARMOR] <= 0 )
-			{
-				cg.noArmorTextTime = level.time + 5000;
-			}
 		}
 	}
 

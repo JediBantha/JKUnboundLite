@@ -748,13 +748,17 @@ void RespawnItem( gentity_t *ent )
 
 qboolean CheckItemCanBePickedUpByNPC( gentity_t *item, gentity_t *pickerupper )
 {
-	if ( !item->item ) {
+	if ( !item->item ) 
+	{
 		return qfalse;
 	}
+
 	if ( item->item->giType == IT_HOLDABLE &&
-		item->item->giTag == INV_SECURITY_KEY ) {
+		item->item->giTag == INV_SECURITY_KEY ) 
+	{
 		return qfalse;
 	}
+
 	if ( (item->flags&FL_DROPPED_ITEM)
 		&& item->activator != &g_entities[0]
 		&& pickerupper->s.number
@@ -768,8 +772,10 @@ qboolean CheckItemCanBePickedUpByNPC( gentity_t *item, gentity_t *pickerupper )
 		{
 			return qfalse;
 		}
+
 		return qtrue;
 	}
+
 	return qfalse;
 }
 
@@ -810,7 +816,8 @@ Touch_Item
 ===============
 */
 extern cvar_t		*g_timescale;
-void Touch_Item (gentity_t *ent, gentity_t *other, trace_t *trace) {
+void Touch_Item (gentity_t *ent, gentity_t *other, trace_t *trace) 
+{
 	int			respawn = 0;
 
 	if (!other->client)
@@ -835,7 +842,8 @@ void Touch_Item (gentity_t *ent, gentity_t *other, trace_t *trace) {
 		return;
 	}
 
-	if ( ent->noDamageTeam != TEAM_FREE && other->client->playerTeam != ent->noDamageTeam )
+	if ( ent->noDamageTeam != TEAM_FREE 
+		&& other->client->playerTeam != ent->noDamageTeam )
 	{//only one team can pick it up
 		return;
 	}
@@ -871,22 +879,28 @@ void Touch_Item (gentity_t *ent, gentity_t *other, trace_t *trace) {
 	}
 
 	// the same pickup rules are used for client side and server side
-	if ( !BG_CanItemBeGrabbed( &ent->s, &other->client->ps ) ) {
+	if ( !BG_CanItemBeGrabbed( &ent->s, &other->client->ps ) ) 
+	{
 		return;
 	}
 
 	if ( other->client )
 	{
-		if ( (other->client->ps.eFlags&EF_FORCE_GRIPPED) || (other->client->ps.eFlags&EF_FORCE_DRAINED) )
+		if ( (other->client->ps.eFlags & EF_FORCE_GRIPPED) || 
+			(other->client->ps.eFlags & EF_FORCE_DRAINED) )
 		{//can't pick up anything while being gripped
 			return;
 		}
-		if ( PM_InKnockDown( &other->client->ps ) && !PM_InGetUp( &other->client->ps ) )
+		
+		if ( PM_InKnockDown( &other->client->ps ) 
+			&& !PM_InGetUp( &other->client->ps ) )
 		{//can't pick up while in a knockdown
 			return;
 		}
 	}
-	if (!ent->item) {		//not an item!
+
+	if (!ent->item) 
+	{		//not an item!
 		gi.Printf( "Touch_Item: %s is not an item!\n", ent->classname);
 		return;
 	}
@@ -910,6 +924,15 @@ void Touch_Item (gentity_t *ent, gentity_t *other, trace_t *trace) {
 	}
 
 	qboolean bHadWeapon = qfalse;
+	qboolean noArmor = qfalse;
+
+	if (g_spskill->integer > 1
+		&& other->client->ps.stats[STAT_ARMOR] <= 0)
+	{
+		noArmor = qtrue;
+	}
+
+
 	// call the item-specific pickup function
 	switch( ent->item->giType )
 	{
@@ -924,17 +947,26 @@ void Touch_Item (gentity_t *ent, gentity_t *other, trace_t *trace) {
 			TIMER_Set( other, "attackDelay", 600 );
 			respawn = 0;
 		}
+
 		if ( other->client->ps.stats[STAT_WEAPONS] & ( 1 << ent->item->giTag ) )
 		{
 			bHadWeapon = qtrue;
 		}
+		
 		respawn = Pickup_Weapon(ent, other);
 		break;
 	case IT_AMMO:
 		respawn = Pickup_Ammo(ent, other);
 		break;
 	case IT_ARMOR:
-		respawn = Pickup_Armor(ent, other);
+		if ( noArmor )
+		{
+			cg.noArmorTextTime = cg.time + 5000;
+		}
+		else
+		{
+			respawn = Pickup_Armor(ent, other);
+		}
 		break;
 	case IT_HEALTH:
 		respawn = Pickup_Health(ent, other);
@@ -989,7 +1021,9 @@ extern void CG_ItemPickup( int itemNum, qboolean bHadItem );
 			ent->delay = level.time + 500;
 			return;
 		}
+		
 		ent->count--;
+		
 		if ( ent->count > 0 )
 		{//still have more to pick up
 			ent->delay = level.time + 500;
@@ -999,8 +1033,18 @@ extern void CG_ItemPickup( int itemNum, qboolean bHadItem );
 	// wait of -1 will not respawn
 //	if ( ent->wait == -1 )
 	{
-		//why not just remove me?
-		G_FreeEntity( ent );
+		if ( ent->item->giType == IT_ARMOR )
+		{
+			if ( !noArmor )
+			{
+				G_FreeEntity( ent );
+			}
+		}
+		else
+		{
+			//why not just remove me?
+			G_FreeEntity( ent );
+		}
 		/*
 		//NOTE: used to do this:  (for respawning?)
 		ent->svFlags |= SVF_NOCLIENT;

@@ -417,15 +417,6 @@ qboolean	BG_CanItemBeGrabbed( const entityState_t *ent, const playerState_t *ps 
 		return qtrue;
 
 	case IT_ARMOR:
-		if ( g_spskill->integer >= 2 )
-		{
-			if ( ps->stats[STAT_ARMOR] <= 0 )
-			{
-				cg.noArmorTextTime = cg.time + 5000;
-				return qfalse;
-			}
-		}
-
 		if ((ps->forcePowersActive & (1 << FP_RAGE)))
 		{
 			return qfalse;
@@ -436,6 +427,7 @@ qboolean	BG_CanItemBeGrabbed( const entityState_t *ent, const playerState_t *ps 
 		{
 			return qfalse;
 		}
+
 		return qtrue;
 
 	case IT_HEALTH:
