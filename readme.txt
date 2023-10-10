@@ -5,6 +5,10 @@ Jedi Knight Unbound is Singleplayer until further notice.
 Gameplay changes:
 Added 3 new inventory items - Jetpack, Cloak and Artusian Crystal
 Force Powers scale indefinitely.
+Mind Trick 4 can now charm enemies in combat as well as taking control of a target while undetected.
+
+*Jedi and up:
+Noghri gas clouds now have a chance to poison their victims.
 
 *Jedi Knight and up:
 Once Armor reaches 0, you will be unable to replenish Armor.
