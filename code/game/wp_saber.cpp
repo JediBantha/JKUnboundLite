@@ -11622,7 +11622,6 @@ void ForceGrip( gentity_t *self )
 			break;
 		case CLASS_DESANN://Desann cannot be gripped, he just pushes you back instantly
 		case CLASS_KYLE:
-		case CLASS_TAVION:
 		case CLASS_LUKE:
 			if ( traceEnt->NPC 
 				&& traceEnt->NPC->rank > RANK_CIVILIAN 
@@ -11639,11 +11638,35 @@ void ForceGrip( gentity_t *self )
 		case CLASS_JEDI:
 			if ( traceEnt->NPC 
 				&& traceEnt->NPC->rank > RANK_CIVILIAN 
-				&& self->client->ps.forcePowerLevel[FP_GRIP] < FORCE_LEVEL_2 )
+				&& self->client->ps.forcePowerLevel[FP_GRIP] < (FORCE_LEVEL_2 + diffInt) )
 			{
 				Jedi_PlayDeflectSound( traceEnt );
 				ForceThrow( traceEnt, qfalse );
 				return;
+			}
+			break;
+		case CLASS_TAVION:
+			if ( !Q_stricmp( "tavion", traceEnt->NPC_type ))
+			{
+				if ( traceEnt->NPC 
+					&& traceEnt->NPC->rank > RANK_CIVILIAN 
+					&& self->client->ps.forcePowerLevel[FP_GRIP] < (FORCE_LEVEL_2 + diffInt) )
+				{
+					Jedi_PlayDeflectSound( traceEnt );
+					ForceThrow( traceEnt, qfalse );
+					return;
+				}
+			}
+			else
+			{
+				if ( traceEnt->NPC 
+					&& traceEnt->NPC->rank > RANK_CIVILIAN 
+					&& self->client->ps.forcePowerLevel[FP_GRIP] < (FORCE_LEVEL_4 + diffInt) )
+				{
+					Jedi_PlayDeflectSound( traceEnt );
+					ForceThrow( traceEnt, qfalse );
+					return;
+				}
 			}
 			break;
 		default:
@@ -12573,11 +12596,10 @@ qboolean ForceDrain2( gentity_t *self )
 			break;
 		case CLASS_DESANN://Desann cannot be gripped, he just pushes you back instantly
 		case CLASS_KYLE:
-		case CLASS_TAVION:
 		case CLASS_LUKE:
 			if ( traceEnt->NPC
 				&& traceEnt->NPC->rank > RANK_CIVILIAN
-				&& self->client->ps.forcePowerLevel[FP_DRAIN] < FORCE_LEVEL_2
+				&& self->client->ps.forcePowerLevel[FP_DRAIN] < FORCE_LEVEL_4
 				&& traceEnt->client->ps.weaponTime <= 0 )
 			{
 				ForceDrainGrabStart( self );
@@ -12601,13 +12623,43 @@ qboolean ForceDrain2( gentity_t *self )
 				return qtrue;
 			}
 			break;
+		case CLASS_TAVION:
+			if ( !Q_stricmp( "tavion", self->NPC_type ) )
+			{
+				if ( traceEnt->NPC
+					&& traceEnt->NPC->rank > RANK_CIVILIAN
+					&& self->client->ps.forcePowerLevel[FP_DRAIN] < FORCE_LEVEL_2
+					&& traceEnt->client->ps.weaponTime <= 0 )
+				{
+					ForceDrainGrabStart( self );
+					Jedi_PlayDeflectSound( traceEnt );
+					ForceThrow( traceEnt, qfalse );
+					return qtrue;
+				}
+			}
+			else
+			{
+				if ( traceEnt->NPC
+					&& traceEnt->NPC->rank > RANK_CIVILIAN
+					&& self->client->ps.forcePowerLevel[FP_DRAIN] < FORCE_LEVEL_4
+					&& traceEnt->client->ps.weaponTime <= 0 )
+				{
+					ForceDrainGrabStart( self );
+					Jedi_PlayDeflectSound( traceEnt );
+					ForceThrow( traceEnt, qfalse );
+					return qtrue;
+				}
+			}
+			break;
 		default:
 			break;
 		}
+
 		if ( traceEnt->s.weapon == WP_EMPLACED_GUN )
 		{//FIXME: maybe can pull them out?
 			return qfalse;
 		}
+
 		if ( traceEnt != self->enemy && OnSameTeam(self, traceEnt) )
 		{//can't accidently grip-drain your teammate
 			return qfalse;
@@ -12649,7 +12701,19 @@ qboolean ForceDrain2( gentity_t *self )
 
 	ForceDrainGrabStart( self );
 
-	WP_ForcePowerStart( self, FP_DRAIN, 10 );
+	int	initCost = 10;
+
+	if ( self->client->ps.forcePowerLevel[FP_DRAIN] > FORCE_LEVEL_3 )
+	{
+		initCost /= (self->client->ps.forcePowerLevel[FP_DRAIN] - FORCE_LEVEL_2);
+
+		if ( initCost < 1 )
+		{
+			initCost = 1;
+		}
+	}
+
+	WP_ForcePowerStart( self, FP_DRAIN, initCost );
 	self->client->ps.forceDrainEntityNum = traceEnt->s.number;
 
 //	G_AddVoiceEvent( traceEnt, Q_irand(EV_PUSHED1, EV_PUSHED3), 2000 );
