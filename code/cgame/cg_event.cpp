@@ -118,21 +118,9 @@ void CG_ItemPickup( int itemNum, qboolean bHadItem )
 
 			if ( cgi_SP_GetStringTextString( va( file, bg_itemlist[itemNum].classname ), data, sizeof( data )))//SP_INGAME_%s
 			{
-				if ( bg_itemlist[itemNum].giType == IT_ARMOR )
-				{
-					if ( g_spskill->integer >= 2 
-						&& cg.snap->ps.stats[STAT_ARMOR] <= 0 )
-					{
-						cgi_Cvar_Set( "cg_NoArmorText", va("%s %s\n", text, data));
-						cg.noArmorTextTime = cg.time + 5000;
-					}
-				}
-				else
-				{
-	//				Com_Printf("%s %s\n", text, data );
-					cgi_Cvar_Set( "cg_WeaponPickupText", va("%s %s\n", text, data));
-					cg.weaponPickupTextTime	= cg.time + 5000;
-				}
+	//			Com_Printf("%s %s\n", text, data );
+				cgi_Cvar_Set( "cg_WeaponPickupText", va("%s %s\n", text, data));
+				cg.weaponPickupTextTime	= cg.time + 5000;
 			}
 		}
 	}

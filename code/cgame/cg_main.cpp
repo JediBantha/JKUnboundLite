@@ -1447,7 +1447,13 @@ static void CG_RegisterGraphics( void ) {
 
 	// battery charge shader when using a gonk
 	cgs.media.batteryChargeShader = cgi_R_RegisterShader( "gfx/2d/battery" );
+
 	cgi_R_RegisterShader( "gfx/2d/droid_view" );
+	cgi_R_RegisterShader( "gfx/2d/droid_view_green" );
+	cgi_R_RegisterShader( "gfx/2d/droid_view_red" );
+	cgi_R_RegisterShader( "gfx/2d/droid_view_yellow" );
+	cgi_R_RegisterShader( "gfx/2d/mindcontrol" );
+
 	cgs.media.useableHint = cgi_R_RegisterShader("gfx/hud/useableHint");
 
 	// Load up other HUD bits

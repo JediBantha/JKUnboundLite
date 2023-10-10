@@ -379,6 +379,8 @@ typedef struct {
 	// FIXME:
 	int			forceCrosshairStartTime;
 	int			forceCrosshairEndTime;
+	int			forceLightCrosshairStartTime;
+	int			forceLightCrosshairEndTime;
 
 	// information screen text during loading
 	char		infoScreenText[MAX_STRING_CHARS];

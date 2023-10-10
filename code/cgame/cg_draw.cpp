@@ -46,6 +46,7 @@ extern int g_crosshairSameEntTime;
 extern int g_crosshairEntNum;
 extern int g_crosshairEntTime;
 qboolean cg_forceCrosshair = qfalse;
+qboolean cg_forceLightCrosshair = qfalse;
 
 // bad cheating
 extern int g_rocketLockEntNum;
@@ -2992,6 +2993,7 @@ static void CG_DrawCrosshair( vec3_t worldPoint )
 	float		w, h;
 	qhandle_t	hShader;
 	qboolean	corona = qfalse;
+	qboolean	lightCorona = qfalse;
 	vec4_t		ecolor;
 	float		f;
 	float		x, y;
@@ -3019,6 +3021,14 @@ static void CG_DrawCrosshair( vec3_t worldPoint )
 		ecolor[2] = 1.0f;
 
 		corona = qtrue;
+	}
+	else if ( cg_forceLightCrosshair && cg_crosshairForceHint.integer )
+	{
+		ecolor[0] = 0.7f;
+		ecolor[1] = 0.9f;
+		ecolor[2] = 1.0f;
+
+		lightCorona = qtrue;
 	}
 	else if ( cg_crosshairIdentifyTarget.integer )
 	{
@@ -3177,6 +3187,34 @@ static void CG_DrawCrosshair( vec3_t worldPoint )
 			cg.forceCrosshairEndTime = 0;
 		}
 	}
+	
+	if ( lightCorona )
+	{
+		if ( !cg.forceLightCrosshairStartTime )
+		{
+			cg.forceLightCrosshairStartTime = cg.time;
+			cg.forceLightCrosshairEndTime = 0;
+		}
+
+		if ( cg.forceLightCrosshairEndTime )
+		{
+			cg.forceLightCrosshairStartTime = cg.time - ( 1.0f - ecolor[3] ) * 300.0f;
+			cg.forceLightCrosshairEndTime = 0;
+		}
+	}
+	else
+	{
+		if ( cg.forceLightCrosshairStartTime && !cg.forceLightCrosshairEndTime )
+		{
+			cg.forceLightCrosshairEndTime = cg.time - ecolor[3] * 500.0f;
+		}
+		
+		if ( cg.forceLightCrosshairEndTime && cg.time - cg.forceLightCrosshairEndTime > 500.0f )
+		{
+			cg.forceLightCrosshairStartTime = 0;
+			cg.forceLightCrosshairEndTime = 0;
+		}
+	}
 
 	w = h = cg_crosshairSize.value;
 
@@ -3264,6 +3302,29 @@ static void CG_DrawCrosshair( vec3_t worldPoint )
 			1, 
 			1,
 			cgs.media.forceCoronaShader 
+		);
+	}
+
+	if ( cg.forceLightCrosshairStartTime && cg_crosshairForceHint.integer )
+	{
+		ecolor[0] = ecolor[1] = ecolor[2] = (1 - ecolor[3]) * ( sin( cg.time * 0.001f ) * 0.08f + 0.35f );
+		ecolor[3] = 1.0f;
+
+		cgi_R_SetColor( ecolor );
+
+		w *= 2.0f;
+		h *= 2.0f;
+
+		cgi_R_DrawStretchPic( 
+			x + cg.refdef.x + 0.5f * ( 640 - w ), 
+			y + cg.refdef.y + 0.5f * ( 480 - h ),
+			w, 
+			h,
+			0, 
+			0, 
+			1, 
+			1,
+			cgs.media.forceCoronaLightShader
 		);
 	}
 
@@ -3412,6 +3473,7 @@ CG_ScanForCrosshairEntity
 */
 extern Vehicle_t *G_IsRidingVehicle( gentity_t *ent );
 extern float forcePushPullRadius[];
+extern float ForcePushPullRadius( gentity_t *self, forcePowers_t forcePower );
 static void CG_ScanForCrosshairEntity( qboolean scanAll )
 {
 	trace_t		trace;
@@ -3426,6 +3488,7 @@ static void CG_ScanForCrosshairEntity( qboolean scanAll )
 	//FIXME: debounce this to about 10fps?
 
 	cg_forceCrosshair = qfalse;
+	cg_forceLightCrosshair = qfalse;
 
 	if ( cg_entities[0].gent && cg_entities[0].gent->client ) // <-Mike said it should always do this   //if (cg_crosshairForceHint.integer &&
 	{//try to check for force-affectable stuff first
@@ -3452,17 +3515,8 @@ static void CG_ScanForCrosshairEntity( qboolean scanAll )
 
 		if ( trace.entityNum < ENTITYNUM_WORLD )
 		{//hit something
-			float	pushRange = (512 + (64 * (pushLevel - 3))), pullRange = (512 + (64 * (pullLevel - 3)));
-
-			if ( pushLevel <= 3 )
-			{
-				pushRange = forcePushPullRadius[pushLevel];
-			}
-
-			if ( pullLevel <= 3 )
-			{
-				pullRange = forcePushPullRadius[pullLevel];
-			}
+			float	pushRange = ForcePushPullRadius( &g_entities[0], FP_PUSH ), 
+				pullRange = ForcePushPullRadius( &g_entities[0], FP_PULL );
 
 			traceEnt = &g_entities[trace.entityNum];
 			
@@ -3476,7 +3530,7 @@ static void CG_ScanForCrosshairEntity( qboolean scanAll )
 						&& VALIDSTRING( traceEnt->behaviorSet[BSET_MINDTRICK] ) )
 					{//I have the ability to mind-trick and he is alive and he has a mind trick script
 						//NOTE: no need to check range since it's always 2048
-						cg_forceCrosshair = qtrue;
+						cg_forceLightCrosshair = qtrue;
 					}
 				}
 				// No?  Check for force-push/pullable doors and func_statics
@@ -4076,18 +4130,16 @@ static void CG_DrawShieldWarning( void )
 		return;
 	}
 
-	if ( cg.lowAmmoWarning > 0 ) 
-	{
-		cgi_SP_GetStringTextString( "SP_INGAME2_NOSHIELD", text, sizeof(text) );
-	} 
-	else 
+	if ( !cg.noArmorTextTime )
 	{
 		return;
 	}
 
+	cgi_SP_GetStringTextString( "SP_INGAME2_NOSHIELD", text, sizeof(text) );
+
 	w = cgi_R_Font_StrLenPixels( text, cgs.media.qhFontSmall, 1.0f );
 
-	cgi_R_Font_DrawString( 320 - w/2, 64, text, colorTable[CT_LTGOLD1], cgs.media.qhFontSmall, -1, 1.0f );
+	cgi_R_Font_DrawString( 320 - w/2, 64, text, colorTable[CT_HUD_GREEN], cgs.media.qhFontSmall, -1, 1.0f );
 }
 //---------------------------------------
 static qboolean CG_RenderingFromMiscCamera()
@@ -4124,7 +4176,32 @@ static qboolean CG_RenderingFromMiscCamera()
 		else
 		{
 			// FIXME: make sure that this assumption is correct...because I'm assuming that I must be a droid.
-			CG_DrawPic( 0, 0, 640, 480, cgi_R_RegisterShader( "gfx/2d/droid_view" ));
+			const char *overlay = "gfx/2d/droid_view";
+
+			if ( NPC_IsDroidClass( &g_entities[cg.snap->ps.viewEntity] ) )
+			{
+				switch ( g_entities[cg.snap->ps.viewEntity].client->NPC_class )
+				{
+				case CLASS_INTERROGATOR:
+				case CLASS_MARK1:
+				case CLASS_MARK2:
+				case CLASS_SENTRY:
+					overlay = "gfx/2d/droid_view_red";
+					break;
+				case CLASS_PROTOCOL:
+					overlay = "gfx/2d/droid_view_yellow";
+					break;
+				case CLASS_ASSASSIN_DROID:
+					overlay = "gfx/2d/droid_view_green";
+					break;
+				}
+			}
+			else
+			{
+				overlay = "gfx/2d/mindcontrol";
+			}
+
+			CG_DrawPic( 0, 0, 640, 480, cgi_R_RegisterShader( overlay ));
 		}
 	}
 
@@ -4696,13 +4773,6 @@ static void CG_Draw2D( void )
 		}
 	}
 
-	if ( cg.noArmorTextTime > cg.time )
-	{
-		gi.Cvar_VariableStringBuffer( "cg_NoArmorText", text, sizeof(text) );
-		
-		CG_DrawShieldWarning();
-	}
-
 	if (cg.weaponPickupTextTime	> cg.time )
 	{
 		int x_pos = 0;
@@ -4715,6 +4785,23 @@ static void CG_Draw2D( void )
 		x_pos = (SCREEN_WIDTH/2)-(w/2);
 
 		cgi_R_Font_DrawString(x_pos, y_pos, text,  colorTable[CT_WHITE], cgs.media.qhFontMedium, -1, 0.8f);
+	}
+
+	if (cg.noArmorTextTime > cg.time )
+	{
+		int			w;
+		vec4_t		textColor = { 0.2f, 1.0f, 0.8f, 1 };
+
+		if (g_spskill->integer < 2)
+		{
+			return;
+		}
+
+		cgi_SP_GetStringTextString( "SP_INGAME2_NOSHIELD", text, sizeof(text) );
+
+		w = cgi_R_Font_StrLenPixels( text, cgs.media.qhFontSmall, 1.0f );
+
+		cgi_R_Font_DrawString( 320 - w / 2, 64, text, colorTable[CT_HUD_GREEN], cgs.media.qhFontSmall, -1, 1.0f );
 	}
 }
 

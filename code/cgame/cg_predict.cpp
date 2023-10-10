@@ -506,19 +506,23 @@ void CG_InterpolatePlayerState( qboolean grabAngles ) {
 CG_TouchItem
 ===================
 */
-void CG_TouchItem( centity_t *cent ) {
+void CG_TouchItem( centity_t *cent ) 
+{
 	gitem_t		*item;
 
 	// never pick an item up twice in a prediction
-	if ( cent->miscTime == cg.time ) {
+	if ( cent->miscTime == cg.time ) 
+	{
 		return;
 	}
 
-	if ( !BG_PlayerTouchesItem( &cg.predicted_player_state, &cent->currentState, cg.time ) ) {
+	if ( !BG_PlayerTouchesItem( &cg.predicted_player_state, &cent->currentState, cg.time ) ) 
+	{
 		return;
 	}
 
-	if ( !BG_CanItemBeGrabbed( &cent->currentState, &cg.predicted_player_state ) ) {
+	if ( !BG_CanItemBeGrabbed( &cent->currentState, &cg.predicted_player_state ) ) 
+	{
 		return;		// can't hold it
 	}
 
@@ -534,10 +538,14 @@ void CG_TouchItem( centity_t *cent ) {
 	cent->miscTime = cg.time;
 
 	// if its a weapon, give them some predicted ammo so the autoswitch will work
-	if ( item->giType == IT_WEAPON ) {
+	if ( item->giType == IT_WEAPON ) 
+	{
 		int ammotype = weaponData[item->giTag].ammoIndex;
+		
 		cg.predicted_player_state.stats[ STAT_WEAPONS ] |= 1 << item->giTag;
-		if ( !cg.predicted_player_state.ammo[ ammotype] ) {
+		
+		if ( !cg.predicted_player_state.ammo[ ammotype] ) 
+		{
 			cg.predicted_player_state.ammo[ ammotype ] = 1;
 		}
 	}
@@ -552,7 +560,8 @@ Predict push triggers and items
 Only called for the last command
 =========================
 */
-void CG_TouchTriggerPrediction( void ) {
+void CG_TouchTriggerPrediction( void ) 
+{
 	int			i;
 	trace_t		trace;
 	entityState_t	*ent;
@@ -561,50 +570,70 @@ void CG_TouchTriggerPrediction( void ) {
 	qboolean	spectator;
 
 	// dead clients don't activate triggers
-	if ( cg.predicted_player_state.stats[STAT_HEALTH] <= 0 ) {
+	if ( cg.predicted_player_state.stats[STAT_HEALTH] <= 0 ) 
+	{
 		return;
 	}
 
 	spectator = (qboolean)( cg.predicted_player_state.pm_type == PM_SPECTATOR );
 
-	if ( cg.predicted_player_state.pm_type != PM_NORMAL && !spectator ) {
+	if ( cg.predicted_player_state.pm_type != PM_NORMAL && !spectator ) 
+	{
 		return;
 	}
 
-	for ( i = 0 ; i < cg.snap->numEntities ; i++ ) {
+	for ( i = 0 ; i < cg.snap->numEntities ; i++ ) 
+	{
 		cent = &cg_entities[ cg.snap->entities[ i ].number ];
 		ent = &cent->currentState;
 
-		if ( ent->eType == ET_ITEM && !spectator ) {
+		if ( ent->eType == ET_ITEM && !spectator ) 
+		{
 			CG_TouchItem( cent );
 			continue;
 		}
 
-		if ( ent->eType != ET_PUSH_TRIGGER && ent->eType != ET_TELEPORT_TRIGGER ) {
+		if ( ent->eType != ET_PUSH_TRIGGER && ent->eType != ET_TELEPORT_TRIGGER ) 
+		{
 			continue;
 		}
 
-		if ( ent->solid != SOLID_BMODEL ) {
+		if ( ent->solid != SOLID_BMODEL ) 
+		{
 			continue;
 		}
 
 		cmodel = cgi_CM_InlineModel( ent->modelindex );
-		if ( !cmodel ) {
+
+		if ( !cmodel ) 
+		{
 			continue;
 		}
 
-		cgi_CM_BoxTrace( &trace, cg.predicted_player_state.origin, cg.predicted_player_state.origin,
-			cg_pmove.mins, cg_pmove.maxs, cmodel, -1 );
+		cgi_CM_BoxTrace( 
+			&trace, 
+			cg.predicted_player_state.origin, 
+			cg.predicted_player_state.origin,
+			cg_pmove.mins, 
+			cg_pmove.maxs, 
+			cmodel, 
+			-1 
+		);
 
-		if ( !trace.startsolid ) {
+		if ( !trace.startsolid ) 
+		{
 			continue;
 		}
 
-		if ( ent->eType == ET_TELEPORT_TRIGGER ) {
+		if ( ent->eType == ET_TELEPORT_TRIGGER ) 
+		{
 			cg.hyperspace = qtrue;
-		} else {
+		} 
+		else 
+		{
 			// we hit this push trigger
-			if ( spectator ) {
+			if ( spectator ) 
+			{
 				continue;
 			}
 
