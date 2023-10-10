@@ -237,6 +237,11 @@ qboolean G_ClearViewEntity( gentity_t *ent )
 			{
 				g_entities[ent->client->ps.viewEntity].NPC->controlledTime = 0;
 				
+				if ( ent->client->ps.forcePowersActive & ( 1 << FP_TELEPATHY ) )
+				{
+					ent->client->ps.forcePowersActive &= ~( 1 << FP_TELEPATHY );
+				}
+
 				SetClientViewAngle( &g_entities[ent->client->ps.viewEntity], g_entities[ent->client->ps.viewEntity].currentAngles );
 				G_SetAngles( &g_entities[ent->client->ps.viewEntity], g_entities[ent->client->ps.viewEntity].currentAngles );
 				VectorCopy( g_entities[ent->client->ps.viewEntity].currentAngles, g_entities[ent->client->ps.viewEntity].NPC->lastPathAngles );
@@ -6229,7 +6234,9 @@ A new command has arrived from the client
 extern void PM_CheckForceUseButton( gentity_t *ent, usercmd_t *ucmd  );
 extern qboolean PM_GentCantJump( gentity_t *gent );
 extern qboolean PM_WeaponOkOnVehicle( int weapon );
-void ClientThink( int clientNum, usercmd_t *ucmd ) {
+extern qboolean WP_CheckBreakControl(  gentity_t *self );
+void ClientThink( int clientNum, usercmd_t *ucmd ) 
+{
 	gentity_t *ent;
 	qboolean restore_ucmd = qfalse;
 	usercmd_t sav_ucmd = {0};
@@ -6245,15 +6252,17 @@ void ClientThink( int clientNum, usercmd_t *ucmd ) {
 			
 			if ( controlled->NPC
 				&& controlled->NPC->controlledTime
-				&& ent->client->ps.forcePowerLevel[FP_TELEPATHY] > 8 )
+				&& ent->client->ps.forcePowerLevel[FP_TELEPATHY] > FORCE_LEVEL_3 )
 			{//An NPC I'm controlling with mind trick
 				if ( controlled->NPC->controlledTime < level.time )
 				{//time's up!
+					ent->client->ps.forcePowersActive &= ~( 1 << FP_TELEPATHY );
 					G_ClearViewEntity( ent );
 					freed = qtrue;
 				}
 				else if ( ucmd->upmove > 0 )
 				{//jumping gets you out of it FIXME: check some other button instead... like ESCAPE... so you could even have total control over an NPC?
+					ent->client->ps.forcePowersActive &= ~( 1 << FP_TELEPATHY );
 					G_ClearViewEntity( ent );
 					ucmd->upmove = 0;//ucmd->buttons = 0;
 					
