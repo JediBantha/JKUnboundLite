@@ -1397,17 +1397,25 @@ char itemRegistered[MAX_ITEMS+1];
 ClearRegisteredItems
 ==============
 */
-void ClearRegisteredItems( void ) {
+void ClearRegisteredItems( void ) 
+{
 	for ( int i = 0; i < bg_numItems; i++ )
 	{
 		itemRegistered[i] = '0';
 	}
+	
 	itemRegistered[ bg_numItems ] = 0;
 
 	//these are given in g_client, ClientSpawn(), but MUST be registered HERE, BEFORE cgame starts.
 	//RegisterItem( FindItemForWeapon( WP_NONE ) );	//has no item
-	RegisterItem( FindItemForInventory( INV_ELECTROBINOCULARS ));
-	RegisterItem( FindItemForInventory( INV_BACTA_CANISTER ));
+	RegisterItem( FindItemForWeapon( WP_MELEE ) );
+
+	for ( int i = INV_ELECTROBINOCULARS; i < INV_FORCE_GEM; i++ )
+	{
+		RegisterItem( FindItemForInventory( i ) );
+	}
+	//RegisterItem( FindItemForInventory( INV_ELECTROBINOCULARS ));
+	//RegisterItem( FindItemForInventory( INV_BACTA_CANISTER ));
 	// saber or baton is cached in SP_info_player_deathmatch now.
 
 extern void Player_CacheFromPrevLevel(void);//g_client.cpp

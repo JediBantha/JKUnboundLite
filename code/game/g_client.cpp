@@ -2468,6 +2468,11 @@ qboolean ClientSpawn(gentity_t *ent, SavedGameJustLoaded_e eSavedGameJustLoaded 
 			}
 		}
 
+		if ( (ent->client->ps.stats[STAT_WEAPONS] & ( 1 << WP_MELEE )) == 0 )
+		{
+			client->ps.stats[STAT_WEAPONS] |= ( 1 << WP_MELEE );
+		}
+
 		if ( ent->weaponModel[0] == -1 && ent->client->ps.weapon != WP_NONE )
 		{
 			G_CreateG2AttachedWeaponModel( 

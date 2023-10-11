@@ -2120,9 +2120,7 @@ void shield_power_converter_use( gentity_t *self, gentity_t *other, gentity_t *a
 			if ( !shieldConDone )
 			{
 				self->count -= add;
-
 				activator->client->ps.stats[STAT_ARMOR] += add;
-
 				self->s.loopSound = G_SoundIndex( "sound/interface/shieldcon_run.wav" );
 			}
 		}
