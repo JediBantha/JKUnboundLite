@@ -5215,6 +5215,12 @@ int CheckArmor (gentity_t *ent, int damage, int dflags, int mod)
 	}
 	else
 	{
+
+		if ( mod == MOD_DISRUPTOR || mod == MOD_SNIPER )
+		{
+			return 0;
+		}
+
 		// armor
 		count = client->ps.stats[STAT_ARMOR];
 
@@ -5282,11 +5288,6 @@ int CheckArmor (gentity_t *ent, int damage, int dflags, int mod)
 
 		if (!save)
 			return 0;
-
-		if ( mod == MOD_DISRUPTOR || mod == MOD_SNIPER )
-		{
-			return 0;
-		}
 
 		client->ps.stats[STAT_ARMOR] -= save;
 
