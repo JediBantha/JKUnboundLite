@@ -3,7 +3,8 @@ Requires assets from Jedi Outcast.
 Jedi Knight Unbound is Singleplayer until further notice.
 
 Gameplay changes:
-Added 3 new inventory items - Jetpack, Cloak and Artusian Crystal
+Damage dealt by the Disruptor Rifle ignores personal shields.
+Added 3 new inventory items - Jetpack, Cloak and Artusian Crystal.
 Force Powers scale indefinitely.
 Mind Trick 4 can now charm enemies in combat as well as taking control of a target while undetected.
 
