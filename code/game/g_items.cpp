@@ -961,6 +961,12 @@ void Touch_Item (gentity_t *ent, gentity_t *other, trace_t *trace)
 	case IT_ARMOR:
 		if ( noArmor )
 		{
+			if ( TIMER_Done( other, "messageTime" ) )
+			{
+				G_Sound(other, G_SoundIndex("sound/player/talk.mp3"));
+				TIMER_Set( other, "messageTime", 5000 );
+			}
+
 			cg.noArmorTextTime = cg.time + 5000;
 		}
 		else

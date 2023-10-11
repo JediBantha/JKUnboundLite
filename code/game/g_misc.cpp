@@ -2093,6 +2093,12 @@ void shield_power_converter_use( gentity_t *self, gentity_t *other, gentity_t *a
 
 				if ( activator->client->ps.stats[STAT_ARMOR] <= 0 )
 				{
+					if (TIMER_Done(activator, "messageTime"))
+					{
+						G_Sound(activator, G_SoundIndex("sound/player/talk.mp3"));
+						TIMER_Set(activator, "messageTime", 5000);
+					}
+
 					cg.noArmorTextTime = cg.time + 5000;
 				}
 			}
