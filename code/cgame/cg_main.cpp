@@ -3419,18 +3419,28 @@ void CG_DrawInventorySelect( void )
 				inv_icons[i] 
 			);
 
-			cgi_R_SetColor(colorTable[CT_ICON_GREEN]);
+			switch ( i )
+			{
+				case INV_ELECTROBINOCULARS:
+				case INV_LIGHTAMP_GOGGLES:
+				case INV_JETPACK:
+				case INV_CLOAK:
+					break;
+				default:
+					cgi_R_SetColor(colorTable[CT_ICON_GREEN]);
 			
-			CG_DrawNumField ( 
-				holdX + addX, 
-				y + smallIconSize, 
-				2, 
-				cg.snap->ps.inventory[i], 
-				6, 
-				12,
-				NUM_FONT_SMALL, 
-				qfalse 
-			);
+					CG_DrawNumField ( 
+						holdX + addX, 
+						y + smallIconSize, 
+						2, 
+						cg.snap->ps.inventory[i], 
+						6, 
+						12,
+						NUM_FONT_SMALL, 
+						qfalse 
+					);
+					break;
+			}
 
 			holdX -= (smallIconSize+pad);
 		}
@@ -3451,18 +3461,29 @@ void CG_DrawInventorySelect( void )
 		);
 		
 		addX = (float) bigIconSize * .75;
-		cgi_R_SetColor(colorTable[CT_ICON_GREEN]);
+
+		switch ( cg.inventorySelect )
+		{
+		case INV_ELECTROBINOCULARS:
+		case INV_LIGHTAMP_GOGGLES:
+		case INV_JETPACK:
+		case INV_CLOAK:
+			break;
+		default:
+			cgi_R_SetColor(colorTable[CT_ICON_GREEN]);
 		
-		CG_DrawNumField ( 
-			(x-(bigIconSize/2)) + addX, 
-			y, 
-			2, 
-			cg.snap->ps.inventory[cg.inventorySelect], 
-			6, 
-			12,
-			NUM_FONT_SMALL, 
-			qfalse 
-		);
+			CG_DrawNumField ( 
+				(x-(bigIconSize/2)) + addX, 
+				y, 
+				2, 
+				cg.snap->ps.inventory[cg.inventorySelect], 
+				6, 
+				12,
+				NUM_FONT_SMALL, 
+				qfalse 
+			);
+			break;
+		}
 
 		if (inv_names[cg.inventorySelect])
 		{
@@ -3537,18 +3558,28 @@ void CG_DrawInventorySelect( void )
 				inv_icons[i] 
 			);
 
-			cgi_R_SetColor(colorTable[CT_ICON_GREEN]);
+			switch ( i )
+			{
+			case INV_ELECTROBINOCULARS:
+			case INV_LIGHTAMP_GOGGLES:
+			case INV_JETPACK:
+			case INV_CLOAK:
+				break;
+			default:
+				cgi_R_SetColor(colorTable[CT_ICON_GREEN]);
 			
-			CG_DrawNumField ( 
-				holdX + addX, 
-				y + smallIconSize, 
-				2, 
-				cg.snap->ps.inventory[i], 
-				6, 
-				12,
-				NUM_FONT_SMALL, 
-				qfalse 
-			);
+				CG_DrawNumField ( 
+					holdX + addX, 
+					y + smallIconSize, 
+					2, 
+					cg.snap->ps.inventory[i], 
+					6, 
+					12,
+					NUM_FONT_SMALL, 
+					qfalse 
+				);
+				break;
+			}
 
 			holdX += (smallIconSize+pad);
 		}
@@ -3672,9 +3703,28 @@ void CG_DrawDataPadInventorySelect( void )
 			cgi_R_SetColor(colorTable[CT_WHITE]);
 			CG_DrawPic( holdX, graphicYPos+10, smallIconSize, smallIconSize, inv_icons[i] );
 
-			cgi_R_SetColor(colorTable[CT_ICON_GREEN]);
-			CG_DrawNumField (holdX + addX, graphicYPos + smallIconSize, 2, cg.snap->ps.inventory[i], 6, 12,
-				NUM_FONT_SMALL,qfalse);
+			switch ( i )
+			{
+			case INV_ELECTROBINOCULARS:
+			case INV_LIGHTAMP_GOGGLES:
+			case INV_JETPACK:
+			case INV_CLOAK:
+				break;
+			default:
+				cgi_R_SetColor(colorTable[CT_ICON_GREEN]);
+
+				CG_DrawNumField (
+					holdX + addX, 
+					graphicYPos + smallIconSize, 
+					2, 
+					cg.snap->ps.inventory[i], 
+					6, 
+					12,
+					NUM_FONT_SMALL,
+					qfalse
+				);
+				break;
+			}
 
 			holdX -= (smallIconSize+pad);
 		}
@@ -3695,19 +3745,29 @@ void CG_DrawDataPadInventorySelect( void )
 		);
 		
 		addX = (float) bigIconSize * .75;
+
+		switch (cg.DataPadInventorySelect)
+		{
+		case INV_ELECTROBINOCULARS:
+		case INV_LIGHTAMP_GOGGLES:
+		case INV_JETPACK:
+		case INV_CLOAK:
+			break;
+		default:
+			cgi_R_SetColor(colorTable[CT_ICON_GREEN]);
 		
-		cgi_R_SetColor(colorTable[CT_ICON_GREEN]);
-		
-		CG_DrawNumField ( 
-			(centerXPos-(bigIconSize/2)) + addX, 
-			graphicYPos, 
-			2, 
-			cg.snap->ps.inventory[cg.DataPadInventorySelect], 
-			6, 
-			12,
-			NUM_FONT_SMALL, 
-			qfalse 
-		);
+			CG_DrawNumField ( 
+				(centerXPos-(bigIconSize/2)) + addX, 
+				graphicYPos, 
+				2, 
+				cg.snap->ps.inventory[cg.DataPadInventorySelect], 
+				6, 
+				12,
+				NUM_FONT_SMALL, 
+				qfalse 
+			);
+			break;
+		}
 
 	}
 
@@ -3750,18 +3810,28 @@ void CG_DrawDataPadInventorySelect( void )
 				inv_icons[i] 
 			);
 
-			cgi_R_SetColor(colorTable[CT_ICON_GREEN]);
+			switch (i)
+			{
+			case INV_ELECTROBINOCULARS:
+			case INV_LIGHTAMP_GOGGLES:
+			case INV_JETPACK:
+			case INV_CLOAK:
+				break;
+			default:
+				cgi_R_SetColor(colorTable[CT_ICON_GREEN]);
 			
-			CG_DrawNumField ( 
-				holdX + addX, 
-				graphicYPos + smallIconSize, 
-				2, 
-				cg.snap->ps.inventory[i], 
-				6, 
-				12,
-				NUM_FONT_SMALL, 
-				qfalse 
-			);
+				CG_DrawNumField ( 
+					holdX + addX, 
+					graphicYPos + smallIconSize, 
+					2, 
+					cg.snap->ps.inventory[i], 
+					6, 
+					12,
+					NUM_FONT_SMALL, 
+					qfalse 
+				);
+				break;
+			}
 
 			holdX += (smallIconSize+pad);
 		}

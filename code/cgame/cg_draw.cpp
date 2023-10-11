@@ -611,7 +611,10 @@ static void CG_DrawAmmo(const centity_t	*cent,const int xPos,const int yPos)
 
 	switch ( cent->currentState.weapon )
 	{
+	case WP_BLASTER_PISTOL:
 	case WP_BLASTER:
+	case WP_BRYAR_PISTOL:
+	case WP_JAWA:
 		weaponColor = CT_AMMO_BLASTER;
 		break;
 	case WP_DISRUPTOR:

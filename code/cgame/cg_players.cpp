@@ -8875,7 +8875,15 @@ Ghoul2 Insert End
 			case WP_BLASTER_PISTOL:
 				// Hardcoded max charge time of 1 second
 				val = ( cg.time - ps->weaponChargeTime ) * 0.001f;
-				shader = cgi_R_RegisterShader( "gfx/effects/bryarFrontFlash" );
+				
+				if ( ps->weapon == WP_BRYAR_PISTOL )
+				{
+					shader = cgi_R_RegisterShader( "gfx/effects/bryarFrontFlash" );
+				}
+				else
+				{
+					shader = cgi_R_RegisterShader( "gfx/effects/blasterPistolFrontFlash" );
+				}
 				break;
 			case WP_BOWCASTER:
 				// Hardcoded max charge time of 1 second
