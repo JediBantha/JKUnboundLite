@@ -1,6 +1,6 @@
 Requires assets from Jedi Outcast.
 
-Jedi Knight Unbound is Singleplayer until further notice.
+Jedi Knight Unbound is Singleplayer-only until further notice.
 
 Gameplay changes:
 Damage dealt by the Disruptor Rifle ignores personal shields.
