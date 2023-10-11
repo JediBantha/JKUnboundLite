@@ -1866,7 +1866,7 @@ static qboolean PM_CheckJump( void )
 				switch ( anim )
 				{
 				case BOTH_WALL_FLIP_LEFT:
-					if ( g_debugMelee->integer )
+					//if ( g_debugMelee->integer )
 					{
 						contents |= CONTENTS_BODY;
 					}
@@ -1877,7 +1877,7 @@ static qboolean PM_CheckJump( void )
 					break;
 
 				case BOTH_WALL_FLIP_RIGHT:
-					if ( g_debugMelee->integer )
+					//if ( g_debugMelee->integer )
 					{
 						contents |= CONTENTS_BODY;
 					}
@@ -1888,7 +1888,7 @@ static qboolean PM_CheckJump( void )
 					break;
 
 				case BOTH_WALL_FLIP_BACK1:
-					if ( g_debugMelee->integer )
+					//if ( g_debugMelee->integer )
 					{
 						contents |= CONTENTS_BODY;
 					}
@@ -1897,7 +1897,7 @@ static qboolean PM_CheckJump( void )
 					break;
 
 				case BOTH_FORCEWALLRUNFLIP_START:
-					if ( g_debugMelee->integer )
+					//if ( g_debugMelee->integer )
 					{
 						contents |= CONTENTS_BODY;
 					}
@@ -2410,8 +2410,8 @@ static qboolean PM_CheckJump( void )
 					&& (level.time-pm->ps->lastOnGround) > 250 //haven't been on the ground in the last 1/4 of a second
 					&& (!(pm->ps->pm_flags&PMF_JUMPING)//not jumping
 						|| ( (level.time-pm->ps->lastOnGround) > 250 //we are jumping, but have been in the air for at least half a second
-							 &&( g_debugMelee->integer//if you know kung fu, no height cap on wall-grab-jumps
-								|| ((pm->ps->origin[2]-pm->ps->forceJumpZStart) < ((PM_ForceJumpHeight( pm ) + 34) - (PM_ForceWallJumpStrength( pm ) / 2.0f))))//can fit at least one more wall jump in (yes, using "magic numbers"... for now)
+							 &&( /*g_debugMelee->integer//if you know kung fu, no height cap on wall-grab-jumps
+								||*/ ((pm->ps->origin[2]-pm->ps->forceJumpZStart) < ((PM_ForceJumpHeight( pm ) + 34) - (PM_ForceWallJumpStrength( pm ) / 2.0f))))//can fit at least one more wall jump in (yes, using "magic numbers"... for now)
 							)
 						)
 					//&& (pm->ps->legsAnim == BOTH_JUMP1 || pm->ps->legsAnim == BOTH_INAIR1 ) )//not in a flip or spin or anything
@@ -14307,7 +14307,7 @@ static void PM_Weapon( void )
 			addTime = weaponData[pm->ps->weapon].fireTime;
 		}
 	}
-	else if ( (pm->ps->weapon == WP_MELEE && (pm->ps->clientNum>=MAX_CLIENTS||!g_debugMelee->integer) )
+	else if ( (pm->ps->weapon == WP_MELEE && (pm->ps->clientNum>=MAX_CLIENTS/* || !g_debugMelee->integer*/))
 		|| pm->ps->weapon == WP_TUSKEN_STAFF
 		|| (pm->ps->weapon == WP_TUSKEN_RIFLE&&!(pm->cmd.buttons&BUTTON_ALT_ATTACK))  )
 	{

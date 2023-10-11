@@ -1003,7 +1003,7 @@ qboolean PM_AdjustAngleForWallJump( gentity_t *ent, usercmd_t *ucmd, qboolean do
 			break;
 		}
 
-		if ( g_debugMelee->integer )
+		//if ( g_debugMelee->integer )
 		{//uber-skillz
 			if ( ucmd->upmove > 0 )
 			{//hold on until you let go manually
@@ -1025,8 +1025,10 @@ qboolean PM_AdjustAngleForWallJump( gentity_t *ent, usercmd_t *ucmd, qboolean do
 				}
 			}
 		}
+
 		VectorMA( ent->currentOrigin, dist, checkDir, traceTo );
 		gi.trace( &trace, ent->currentOrigin, mins, maxs, traceTo, ent->s.number, ent->clipmask, (EG2_Collision)0, 0 );
+		
 		if ( //ucmd->upmove <= 0 &&
 			ent->client->ps.legsAnimTimer > 100 &&
 			trace.fraction < 1.0f && fabs(trace.plane.normal[2]) <= MAX_WALL_GRAB_SLOPE )
@@ -1071,16 +1073,40 @@ qboolean PM_AdjustAngleForWallJump( gentity_t *ent, usercmd_t *ucmd, qboolean do
 			//push off of it!
 			ent->client->ps.pm_flags &= ~PMF_STUCK_TO_WALL;
 			ent->client->ps.velocity[0] = ent->client->ps.velocity[1] = 0;
+			
 			VectorScale( checkDir, -JUMP_OFF_WALL_SPEED, ent->client->ps.velocity );
+			
 			ent->client->ps.velocity[2] = G_ForceWallJumpStrength( ent );
 			ent->client->ps.pm_flags |= PMF_JUMPING|PMF_JUMP_HELD;
+			
 			G_SoundOnEnt( ent, CHAN_BODY, "sound/weapons/force/jump.wav" );
+			
 			ent->client->ps.forcePowersActive |= (1<<FP_LEVITATION);
-			WP_ForcePowerDrain( ent, FP_LEVITATION, 10 );
+			
+			int	jumpCost = 10;
+
+			if ( ent->client->ps.forcePowerLevel[FP_LEVITATION] > FORCE_LEVEL_3 )
+			{
+				jumpCost /= (ent->client->ps.forcePowerLevel[FP_LEVITATION] - FORCE_LEVEL_2);
+
+				if ( jumpCost < 1 )
+				{
+					jumpCost = 1;
+				}
+			}
+
+			WP_ForcePowerDrain( ent, FP_LEVITATION, jumpCost );
+			
 			if ( PM_InReboundHold( ent->client->ps.legsAnim ) )
 			{//if was in hold pose, release now
-				NPC_SetAnim( ent, SETANIM_BOTH, BOTH_FORCEWALLRELEASE_FORWARD+(ent->client->ps.legsAnim-BOTH_FORCEWALLHOLD_FORWARD), SETANIM_FLAG_OVERRIDE|SETANIM_FLAG_HOLD );
+				NPC_SetAnim( 
+					ent, 
+					SETANIM_BOTH, 
+					BOTH_FORCEWALLRELEASE_FORWARD+(ent->client->ps.legsAnim-BOTH_FORCEWALLHOLD_FORWARD), 
+					SETANIM_FLAG_OVERRIDE|SETANIM_FLAG_HOLD 
+				);
 			}
+
 			//no control for half a second
 			ent->client->ps.pm_flags |= PMF_TIME_KNOCKBACK;
 			ent->client->ps.pm_time = 500;
@@ -1090,7 +1116,9 @@ qboolean PM_AdjustAngleForWallJump( gentity_t *ent, usercmd_t *ucmd, qboolean do
 			//return qtrue;
 		}
 	}
+
 	ent->client->ps.pm_flags &= ~PMF_STUCK_TO_WALL;
+	
 	return qfalse;
 }
 

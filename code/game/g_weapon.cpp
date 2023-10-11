@@ -1485,7 +1485,7 @@ void FireWeapon( gentity_t *ent, qboolean alt_fire )
 
 	case WP_MELEE:
 		alert = 0; // if you want it to alert enemies, remove this
-		if ( !alt_fire || !g_debugMelee->integer )
+		if ( !alt_fire /*|| !g_debugMelee->integer*/ )
 		{
 			WP_Melee( ent );
 		}
