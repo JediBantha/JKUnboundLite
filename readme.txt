@@ -6,7 +6,7 @@ Gameplay changes:
 Damage dealt by the Disruptor Rifle ignores personal shields.
 Added 3 new inventory items - Jetpack, Cloak and Artusian Crystal.
 Force Powers scale indefinitely.
-Typing '-1' in the 'SET_FORCE_<power>_LEVEL' commands in Icarus increases specified powers by 1.
+Typing '-1' in the 'SET_FORCE_<power>_LEVEL' commands in Icarus increases specified powers by 1. (ex. set ( /*@SET_TYPES*/ "SET_FORCE_JUMP_LEVEL", /*@FORCE_LEVELS*/ "-1" );)
 Mind Trick 4 can now charm enemies in combat as well as taking control of a target while undetected.
 Holocrons have been reworked to add to the player's current Force level if the Power in question is already known.
 The 'Hack' function from MP has been fully ported into SP.
