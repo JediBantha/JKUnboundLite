@@ -7,6 +7,7 @@ Damage dealt by the Disruptor Rifle ignores personal shields.
 Added 3 new inventory items - Jetpack, Cloak and Artusian Crystal.
 Force Powers scale indefinitely.
 Mind Trick 4 can now charm enemies in combat as well as taking control of a target while undetected.
+Holocrons have been reworked to add to the player's current Force level if the Power in question is already known.
 
 *Jedi and up:
 Noghri gas clouds now have a chance to poison their victims.
