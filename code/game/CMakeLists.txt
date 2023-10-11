@@ -215,6 +215,7 @@ set(SPGameCGameFiles
 	"${SPDir}/cgame/cg_weapons.cpp"
 	"${SPDir}/cgame/FX_ATSTMain.cpp"
 	"${SPDir}/cgame/FX_Blaster.cpp"
+	"${SPDir}/cgame/FX_BlasterPistol.cpp"
 	"${SPDir}/cgame/FX_Bowcaster.cpp"
 	"${SPDir}/cgame/FX_BryarPistol.cpp"
 	"${SPDir}/cgame/FX_Concussion.cpp"

@@ -61,7 +61,7 @@ void NPC_Mark2_Precache( void )
 	G_EffectIndex( "blaster/smoke_bolton" );
 	G_EffectIndex( "bryar/muzzle_flash" );
 
-	RegisterItem( FindItemForWeapon( WP_BRYAR_PISTOL ));
+	RegisterItem( FindItemForWeapon( WP_BLASTER_PISTOL ));//WP_BRYAR_PISTOL
 	RegisterItem( FindItemForAmmo( 	AMMO_METAL_BOLTS));
 	RegisterItem( FindItemForAmmo( AMMO_POWERCELL ));
 	RegisterItem( FindItemForAmmo( AMMO_BLASTER ));
@@ -188,8 +188,8 @@ void Mark2_FireBlaster(qboolean advance)
 
 	missile = CreateMissile( muzzle1, forward, 1600, 10000, NPC );
 
-	missile->classname = "bryar_proj";
-	missile->s.weapon = WP_BRYAR_PISTOL;
+	missile->classname = "pistol_proj";//"bryar_proj";
+	missile->s.weapon = WP_BLASTER_PISTOL;//WP_BRYAR_PISTOL;
 
 	missile->damage = 1;
 	missile->dflags = DAMAGE_DEATH_KNOCKBACK;

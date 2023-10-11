@@ -92,7 +92,7 @@ void NPC_Mark1_Precache(void)
 	RegisterItem( FindItemForAmmo( 	AMMO_METAL_BOLTS));
 	RegisterItem( FindItemForAmmo( AMMO_BLASTER ));
 	RegisterItem( FindItemForWeapon( WP_BOWCASTER ));
-	RegisterItem( FindItemForWeapon( WP_BRYAR_PISTOL ));
+	RegisterItem( FindItemForWeapon( WP_BLASTER_PISTOL ));//WP_BRYAR_PISTOL
 }
 
 /*
@@ -250,8 +250,8 @@ void Mark1Dead_FireBlaster (void)
 
 	G_Sound( NPC, G_SoundIndex("sound/chars/mark1/misc/mark1_fire"));
 
-	missile->classname = "bryar_proj";
-	missile->s.weapon = WP_BRYAR_PISTOL;
+	missile->classname = "pistol_proj";//"bryar_proj";
+	missile->s.weapon = WP_BLASTER_PISTOL;//WP_BRYAR_PISTOL;
 	
 	if ( g_spskill->integer < 0 )
 	{
@@ -567,8 +567,8 @@ void Mark1_FireBlaster(void)
 
 	missile = CreateMissile( muzzle1, forward, velocity, 10000, NPC );
 
-	missile->classname = "bryar_proj";
-	missile->s.weapon = WP_BRYAR_PISTOL;
+	missile->classname = "pistol_proj";//"bryar_proj";
+	missile->s.weapon = WP_BLASTER_PISTOL;//WP_BRYAR_PISTOL;
 
 	if ( g_spskill->integer < 0 )
 	{

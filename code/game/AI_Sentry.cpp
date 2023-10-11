@@ -207,8 +207,8 @@ void Sentry_Fire (void)
 
 	missile = CreateMissile( muzzle, forward, velocity, 10000, NPC );
 
-	missile->classname = "bryar_proj";
-	missile->s.weapon = WP_BRYAR_PISTOL;
+	missile->classname = "pistol_proj";//"bryar_proj";
+	missile->s.weapon = WP_BLASTER_PISTOL;//WP_BRYAR_PISTOL;
 
 	missile->dflags = DAMAGE_DEATH_KNOCKBACK;
 	missile->methodOfDeath = MOD_ENERGY;

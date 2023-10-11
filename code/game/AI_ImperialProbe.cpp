@@ -56,7 +56,7 @@ void NPC_Probe_Precache(void)
 	G_EffectIndex( "bryar/muzzle_flash" );
 
 	RegisterItem( FindItemForAmmo( AMMO_BLASTER ));
-	RegisterItem( FindItemForWeapon( WP_BRYAR_PISTOL ) );
+	RegisterItem( FindItemForWeapon( WP_BLASTER_PISTOL ) );//WP_BRYAR_PISTOL
 }
 /*
 -------------------------
@@ -331,8 +331,8 @@ void ImperialProbe_FireBlaster(void)
 
 	missile = CreateMissile( muzzle1, forward, velocity, 10000, NPC );
 
-	missile->classname = "bryar_proj";
-	missile->s.weapon = WP_BRYAR_PISTOL;
+	missile->classname = "pistol_proj";//"bryar_proj"
+	missile->s.weapon = WP_BLASTER_PISTOL;//WP_BRYAR_PISTOL
 
 	if ( g_spskill->integer <= 1 )
 	{
