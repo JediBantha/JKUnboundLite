@@ -35,6 +35,9 @@ typedef struct {
 void FX_BryarProjectileThink(  centity_t *cent, const struct weaponInfo_s *weapon );
 void FX_BryarAltProjectileThink(  centity_t *cent, const struct weaponInfo_s *weapon );
 
+void FX_BlasterPistolProjectileThink(  centity_t *cent, const struct weaponInfo_s *weapon );
+void FX_BlasterPistolAltProjectileThink(  centity_t *cent, const struct weaponInfo_s *weapon );
+
 // Blaster
 void FX_BlasterProjectileThink( centity_t *cent, const struct weaponInfo_s *weapon );
 void FX_BlasterAltFireThink( centity_t *cent, const struct weaponInfo_s *weapon );
@@ -82,28 +85,30 @@ void FX_NoghriShotProjectileThink( centity_t *cent, const struct weaponInfo_s *w
 
 // Table used to attach an extern missile function string to the actual cgame function
 func_t	funcs[] = {
-	{"bryar_func",			FX_BryarProjectileThink},
-	{"bryar_alt_func",		FX_BryarAltProjectileThink},
-	{"blaster_func",		FX_BlasterProjectileThink},
-	{"blaster_alt_func",	FX_BlasterAltFireThink},
-	{"bowcaster_func",		FX_BowcasterProjectileThink},
-	{"repeater_func",		FX_RepeaterProjectileThink},
-	{"repeater_alt_func",	FX_RepeaterAltProjectileThink},
-	{"demp2_func",			FX_DEMP2_ProjectileThink},
-	{"demp2_alt_func",		FX_DEMP2_AltProjectileThink},
-	{"flechette_func",		FX_FlechetteProjectileThink},
-	{"flechette_alt_func",	FX_FlechetteAltProjectileThink},
-	{"rocket_func",			FX_RocketProjectileThink},
-	{"rocket_alt_func",		FX_RocketAltProjectileThink},
-	{"conc_func",			FX_ConcProjectileThink},
-	{"emplaced_func",		FX_EmplacedProjectileThink},
-	{"turret_func",			FX_TurretProjectileThink},
-	{"atstmain_func",		FX_ATSTMainProjectileThink},
-	{"atst_side_alt_func",	FX_ATSTSideAltProjectileThink},
-	{"atst_side_main_func",	FX_ATSTSideMainProjectileThink},
-	{"tusk_shot_func",		FX_TuskenShotProjectileThink},
-	{"noghri_shot_func",	FX_NoghriShotProjectileThink},
-	{NULL,					NULL}
+	{"bryar_func",				FX_BryarProjectileThink},
+	{"bryar_alt_func",			FX_BryarAltProjectileThink},
+	{"pistol_func",				FX_BlasterPistolProjectileThink},
+	{"pistol_alt_func",			FX_BlasterPistolAltProjectileThink},
+	{"blaster_func",			FX_BlasterProjectileThink},
+	{"blaster_alt_func",		FX_BlasterAltFireThink},
+	{"bowcaster_func",			FX_BowcasterProjectileThink},
+	{"repeater_func",			FX_RepeaterProjectileThink},
+	{"repeater_alt_func",		FX_RepeaterAltProjectileThink},
+	{"demp2_func",				FX_DEMP2_ProjectileThink},
+	{"demp2_alt_func",			FX_DEMP2_AltProjectileThink},
+	{"flechette_func",			FX_FlechetteProjectileThink},
+	{"flechette_alt_func",		FX_FlechetteAltProjectileThink},
+	{"rocket_func",				FX_RocketProjectileThink},
+	{"rocket_alt_func",			FX_RocketAltProjectileThink},
+	{"conc_func",				FX_ConcProjectileThink},
+	{"emplaced_func",			FX_EmplacedProjectileThink},
+	{"turret_func",				FX_TurretProjectileThink},
+	{"atstmain_func",			FX_ATSTMainProjectileThink},
+	{"atst_side_alt_func",		FX_ATSTSideAltProjectileThink},
+	{"atst_side_main_func",		FX_ATSTSideMainProjectileThink},
+	{"tusk_shot_func",			FX_TuskenShotProjectileThink},
+	{"noghri_shot_func",		FX_NoghriShotProjectileThink},
+	{NULL,						NULL}
 };
 
 //qboolean COM_ParseInt( char **data, int *i );

@@ -92,18 +92,21 @@ void WP_FireBryarPistol( gentity_t *ent, qboolean alt_fire )
 
 	gentity_t	*missile = CreateMissile( start, forwardVec, velocity, 10000, ent, alt_fire );
 
-	missile->classname = "bryar_proj";
+	char		*projName = "bryar_proj";
 
 	switch ( ent->s.weapon )
 	{//*SIGH*... I hate our weapon system...
 	case WP_BLASTER_PISTOL:
 	case WP_JAWA:
 		missile->s.weapon = ent->s.weapon;
+		projName = "pistol_proj";
 		break;
 	default:
 		missile->s.weapon = WP_BRYAR_PISTOL;
 		break;
 	}
+
+	missile->classname = projName;
 
 	if ( alt_fire )
 	{

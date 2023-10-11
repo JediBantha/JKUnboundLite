@@ -1398,6 +1398,21 @@ qboolean WP_GetSaberDeflectionAngle( gentity_t *attacker, gentity_t *defender )
 	{
 		return qfalse;
 	}
+
+	if ( defender->client->ps.forcePowersActive & ( 1 << FP_RAGE ) )
+	{
+		return qfalse;
+	}
+
+	if ( defender->client->ps.forcePowersActive & ( 1 << FP_PROTECT ) )
+	{
+		if ( !defender->s.number 
+			&& defender->client->ps.forcePowerLevel[FP_PROTECT] > FORCE_LEVEL_3 )
+		{
+			return qfalse;
+		}
+	}
+
 	attacker->client->ps.saberBounceMove = LS_NONE;
 
 	//get the attacker's saber base pos at time of impact
