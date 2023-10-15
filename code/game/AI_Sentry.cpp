@@ -70,10 +70,11 @@ void NPC_Sentry_Precache(void)
 		G_SoundIndex( va( "sound/chars/sentry/misc/talk%d", i ) );
 	}
 
-	G_EffectIndex( "bryar/muzzle_flash");
+	G_EffectIndex( "blaster_pistol/muzzle_flash");//"bryar/muzzle_flash"
 	G_EffectIndex( "env/med_explode");
 
 	RegisterItem( FindItemForAmmo( AMMO_BLASTER ));
+	RegisterItem( FindItemForWeapon( WP_BLASTER_PISTOL ));
 }
 
 /*
@@ -193,7 +194,7 @@ void Sentry_Fire (void)
 	AngleVectors( NPC->currentAngles, forward, vright, up );
 //	G_Sound( NPC, G_SoundIndex("sound/chars/sentry/misc/shoot.wav"));
 
-	G_PlayEffect( "bryar/muzzle_flash", muzzle, forward );
+	G_PlayEffect( "blaster_pistol/muzzle_flash", muzzle, forward );//"bryar/muzzle_flash"
 
 	if ( g_spskill->integer > 2 )
 	{

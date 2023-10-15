@@ -86,7 +86,7 @@ void NPC_Mark1_Precache(void)
 	G_EffectIndex( "env/med_explode2");
 	G_EffectIndex( "explosions/probeexplosion1");
 	G_EffectIndex( "blaster/smoke_bolton");
-	G_EffectIndex( "bryar/muzzle_flash");
+	G_EffectIndex( "blaster_pistol/muzzle_flash");//"bryar/muzzle_flash"
 	G_EffectIndex( "explosions/droidexplosion1" );
 
 	RegisterItem( FindItemForAmmo( 	AMMO_METAL_BOLTS));
@@ -155,7 +155,7 @@ void Mark1Dead_FireRocket (void)
 	gi.G2API_GiveMeVectorFromMatrix( boltMatrix, ORIGIN, muzzle1 );
 	gi.G2API_GiveMeVectorFromMatrix( boltMatrix, NEGATIVE_Y, muzzle_dir );
 
-	G_PlayEffect( "bryar/muzzle_flash", muzzle1, muzzle_dir );
+	G_PlayEffect( "blaster_pistol/muzzle_flash", muzzle1, muzzle_dir );//"bryar/muzzle_flash"
 
 	G_Sound( NPC, G_SoundIndex("sound/chars/mark1/misc/mark1_fire"));
 
@@ -234,7 +234,7 @@ void Mark1Dead_FireBlaster (void)
 	gi.G2API_GiveMeVectorFromMatrix( boltMatrix, ORIGIN, muzzle1 );
 	gi.G2API_GiveMeVectorFromMatrix( boltMatrix, NEGATIVE_Y, muzzle_dir );
 
-	G_PlayEffect( "bryar/muzzle_flash", muzzle1, muzzle_dir );
+	G_PlayEffect( "blaster_pistol/muzzle_flash", muzzle1, muzzle_dir );//"bryar/muzzle_flash"
 
 	if ( g_spskill->integer > 2 )
 	{
@@ -551,7 +551,7 @@ void Mark1_FireBlaster(void)
 		AngleVectors (NPC->currentAngles, forward, vright, up);
 	}
 
-	G_PlayEffect( "bryar/muzzle_flash", muzzle1, forward );
+	G_PlayEffect( "blaster_pistol/muzzle_flash", muzzle1, forward );//"bryar/muzzle_flash"
 
 	G_Sound( NPC, G_SoundIndex("sound/chars/mark1/misc/mark1_fire"));
 

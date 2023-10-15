@@ -59,7 +59,7 @@ void NPC_Mark2_Precache( void )
 	G_EffectIndex( "explosions/droidexplosion1" );
 	G_EffectIndex( "env/med_explode2" );
 	G_EffectIndex( "blaster/smoke_bolton" );
-	G_EffectIndex( "bryar/muzzle_flash" );
+	G_EffectIndex( "blaster_pistol/muzzle_flash" );//"bryar/muzzle_flash"
 
 	RegisterItem( FindItemForWeapon( WP_BLASTER_PISTOL ));//WP_BRYAR_PISTOL
 	RegisterItem( FindItemForAmmo( 	AMMO_METAL_BOLTS));
@@ -182,7 +182,7 @@ void Mark2_FireBlaster(qboolean advance)
 		AngleVectors (NPC->currentAngles, forward, vright, up);
 	}
 
-	G_PlayEffect( "bryar/muzzle_flash", muzzle1, forward );
+	G_PlayEffect( "blaster_pistol/muzzle_flash", muzzle1, forward );//"bryar/muzzle_flash"
 
 	G_Sound( NPC, G_SoundIndex("sound/chars/mark2/misc/mark2_fire"));
 

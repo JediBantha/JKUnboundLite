@@ -105,6 +105,23 @@ qboolean NPC_IsJediClass( gentity_t *ent )
 	return qtrue;
 }
 
+void NPC_DroppedItems_Precache( void )
+{
+	for ( int ammo = AMMO_BLASTER; ammo < AMMO_ROCKETS; ammo++ )
+	{
+		RegisterItem( FindItemForInventory( ammo ) );
+	}
+
+	RegisterItem( FindItem( "item_battery" ) );
+
+	for ( int item = INV_ELECTROBINOCULARS; item < INV_SENTRY; item++ )
+	{
+		RegisterItem( FindItemForInventory( item ) );
+	}
+
+	RegisterItem( FindItemForInventory( INV_FORCE_GEM ) );
+}
+
 /*
 void NPC_LostEnemyDecideChase(void)
 

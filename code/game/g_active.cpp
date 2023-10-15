@@ -4878,6 +4878,7 @@ void G_CheckClientIdle( gentity_t *ent, usercmd_t *ucmd )
 			case BOTH_STAND2IDLE2:
 			case BOTH_STAND3IDLE1:
 			case BOTH_STAND5IDLE1:
+			case BOTH_STAND9IDLE1:
 				ent->client->ps.legsAnimTimer = 0;
 				break;
 			}
@@ -4889,6 +4890,7 @@ void G_CheckClientIdle( gentity_t *ent, usercmd_t *ucmd )
 			case BOTH_STAND2IDLE2:
 			case BOTH_STAND3IDLE1:
 			case BOTH_STAND5IDLE1:
+			case BOTH_STAND9IDLE1:
 				ent->client->ps.torsoAnimTimer = 0;
 				break;
 			}
@@ -4917,6 +4919,9 @@ void G_CheckClientIdle( gentity_t *ent, usercmd_t *ucmd )
 			break;
 		case BOTH_STAND5:
 			idleAnim = BOTH_STAND5IDLE1;
+			break;
+		case BOTH_STAND9:
+			idleAnim = BOTH_STAND9IDLE1;
 			break;
 		}
 		

@@ -115,7 +115,7 @@ void NPC_CultistDestroyer_Precache( void )
 
 void NPC_ShadowTrooper_Precache( void )
 {
-	RegisterItem( FindItemForAmmo( AMMO_FORCE ) );
+	RegisterItem( FindItemForInventory( INV_FORCE_GEM ) );
 	G_SoundIndex( "sound/chars/shadowtrooper/cloak.wav" );
 	G_SoundIndex( "sound/chars/shadowtrooper/decloak.wav" );
 }

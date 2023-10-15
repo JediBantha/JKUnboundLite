@@ -5393,7 +5393,8 @@ void PM_TorsoAnimLightsaber()
 			|| pm->ps->legsAnim == BOTH_STAND2IDLE1
 			|| pm->ps->legsAnim == BOTH_STAND2IDLE2
 			|| pm->ps->legsAnim == BOTH_STAND3IDLE1
-			|| pm->ps->legsAnim == BOTH_STAND5IDLE1 )
+			|| pm->ps->legsAnim == BOTH_STAND5IDLE1
+			|| pm->ps->legsAnim == BOTH_STAND9IDLE1 )
 		{
 			PM_SetAnim(pm,SETANIM_TORSO,pm->ps->legsAnim,SETANIM_FLAG_NORMAL);
 			pm->ps->saberMove = LS_READY;
@@ -6145,7 +6146,8 @@ void PM_TorsoAnimation( void )
 			|| pm->ps->legsAnim == BOTH_STAND2IDLE1
 			|| pm->ps->legsAnim == BOTH_STAND2IDLE2
 			|| pm->ps->legsAnim == BOTH_STAND3IDLE1
-			|| pm->ps->legsAnim == BOTH_STAND5IDLE1 )
+			|| pm->ps->legsAnim == BOTH_STAND5IDLE1
+			|| pm->ps->legsAnim == BOTH_STAND9IDLE1 )
 		{
 			PM_SetAnim(pm,SETANIM_TORSO,pm->ps->legsAnim,SETANIM_FLAG_NORMAL);
 			pm->ps->saberMove = LS_READY;

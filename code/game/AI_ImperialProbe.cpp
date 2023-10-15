@@ -53,7 +53,7 @@ void NPC_Probe_Precache(void)
 	G_EffectIndex( "chunks/probehead" );
 	G_EffectIndex( "env/med_explode2" );
 	G_EffectIndex( "explosions/probeexplosion1");
-	G_EffectIndex( "bryar/muzzle_flash" );
+	G_EffectIndex( "blaster_pistol/muzzle_flash" );//"bryar/muzzle_flash"
 
 	RegisterItem( FindItemForAmmo( AMMO_BLASTER ));
 	RegisterItem( FindItemForWeapon( WP_BLASTER_PISTOL ) );//WP_BRYAR_PISTOL
@@ -301,7 +301,7 @@ void ImperialProbe_FireBlaster(void)
 
 	gi.G2API_GiveMeVectorFromMatrix( boltMatrix, ORIGIN, muzzle1 );
 
-	G_PlayEffect( "bryar/muzzle_flash", muzzle1 );
+	G_PlayEffect( "blaster_pistol/muzzle_flash", muzzle1 );//"bryar/muzzle_flash"
 
 	G_Sound( NPC, G_SoundIndex( "sound/chars/probe/misc/fire" ));
 

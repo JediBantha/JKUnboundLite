@@ -54,6 +54,7 @@ void NPC_Seeker_Precache(void)
 	G_SoundIndex("sound/chars/seeker/misc/fire.wav");
 	G_SoundIndex( "sound/chars/seeker/misc/hiss.wav");
 	G_EffectIndex( "env/small_explode");
+	RegisterItem( FindItemForWeapon( WP_BRYAR_PISTOL ));
 }
 
 //------------------------------------
@@ -319,10 +320,10 @@ void Seeker_Fire( void )
 
 	missile = CreateMissile( muzzle, dir, 1000, 10000, NPC );
 
-	G_PlayEffect( "blaster/muzzle_flash", NPC->currentOrigin, dir );
+	G_PlayEffect( "bryar/muzzle_flash", NPC->currentOrigin, dir );
 
-	missile->classname = "blaster";
-	missile->s.weapon = WP_BLASTER;
+	missile->classname = "bryar_proj";//"blaster";
+	missile->s.weapon = WP_BRYAR_PISTOL;
 
 	missile->damage = 7;
 	missile->dflags = DAMAGE_DEATH_KNOCKBACK;

@@ -44,6 +44,7 @@ void NPC_Remote_Precache(void)
 	G_SoundIndex("sound/chars/remote/misc/fire.wav");
 	G_SoundIndex( "sound/chars/remote/misc/hiss.wav");
 	G_EffectIndex( "env/small_explode");
+	RegisterItem( FindItemForWeapon( WP_BRYAR_PISTOL ));
 }
 
 /*
