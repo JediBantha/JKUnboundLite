@@ -3198,6 +3198,33 @@ static void CG_DrawCrosshair( vec3_t worldPoint )
 		}
 	}
 	
+
+	if ( cg.forceLightCrosshairStartTime )
+	{
+		if ( cg.forceLightCrosshairEndTime )
+		{
+			ecolor[3] = (cg.time - cg.forceLightCrosshairEndTime) / 500.0f;
+		}
+		else
+		{
+			ecolor[3] = (cg.time - cg.forceLightCrosshairStartTime) / 300.0f;
+		}
+
+		if ( ecolor[3] < 0 )
+		{
+			ecolor[3] = 0;
+		}
+		else if ( ecolor[3] > 1.0f )
+		{
+			ecolor[3] = 1.0f;
+		}
+
+		if ( !cg.forceLightCrosshairEndTime )
+		{
+			ecolor[3] = 1.0f - ecolor[3];
+		}
+	}
+	
 	if ( lightCorona )
 	{
 		if ( !cg.forceLightCrosshairStartTime )
