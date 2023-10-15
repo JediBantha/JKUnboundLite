@@ -172,6 +172,7 @@ extern float forceSpeedRangeMod[];
 extern float forceSpeedFOVMod[];
 extern float ForceSpeedDuration( gentity_t *self );
 extern float ForceSpeedValue( gentity_t *self );
+extern float ForceRageDuration( gentity_t *self );
 extern const char *saberColorStringForColor[];
 #define FORCE_SPEED_DURATION 10000.0f
 #define FORCE_RAGE_DURATION 10000.0f

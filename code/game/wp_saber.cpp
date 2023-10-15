@@ -554,18 +554,7 @@ float ForceRageDuration( gentity_t *self )
 
 	if ( rageLevel > 3 )
 	{
-		switch ( rageLevel )
-		{
-		case 4:
-		case 5:
-		case 6:
-			rageDuration = 20000.0f;
-			break;
-		case 7:
-		default:
-			rageDuration = (5000.0f * (rageLevel - 1));
-			break;
-		}
+		rageDuration = (FORCE_RAGE_DURATION + (5000.0f * (rageLevel - 3)));
 
 		if ( rageDuration > 60000.0f )
 		{
@@ -14644,20 +14633,20 @@ void WP_ForcePowerStop( gentity_t *self, forcePowers_t forcePower )
 		}
 		break;
 	case FP_RAGE:
-		self->client->ps.forceRageRecoveryTime = level.time + self->client->ps.forcePowerDuration[FP_RAGE];//recover for 10 seconds
-		
-		if ( self->client->ps.forceRageRecoveryTime > 10000 )
+		self->client->ps.forceRageRecoveryTime = level.time + ForceRageDuration( self );//recover for 10 seconds
+
+		if ( self->client->ps.forceRageRecoveryTime > level.time + FORCE_RAGE_DURATION )
 		{
-			self->client->ps.forceRageRecoveryTime = 10000;
+			self->client->ps.forceRageRecoveryTime = level.time + FORCE_RAGE_DURATION;
 		}
 
 		if ( self->client->ps.forcePowerDuration[FP_RAGE] > level.time )
 		{//still had time left, we cut it short
-			int	cutTime = (self->client->ps.forcePowerDuration[FP_RAGE] - level.time);
+			float	cutTime = (self->client->ps.forcePowerDuration[FP_RAGE] - level.time);
 
-			if ( cutTime > 10000 )
+			if ( cutTime > FORCE_RAGE_DURATION )
 			{
-				cutTime = 10000;
+				cutTime = FORCE_RAGE_DURATION;
 			}
 
 			self->client->ps.forceRageRecoveryTime -= cutTime;//minus however much time you had left when you cut it short

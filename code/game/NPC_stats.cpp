@@ -1400,6 +1400,7 @@ This runs all the class specific precache functions
 
 */
 
+extern void NPC_DroppedItems_Precache( void );
 extern void NPC_ShadowTrooper_Precache( void );
 extern void NPC_Gonk_Precache( void );
 extern void NPC_Mouse_Precache( void );
@@ -1443,6 +1444,8 @@ void NPC_PrecacheByClassName( const char* type )
 	{
 		return;
 	}
+
+	NPC_DroppedItems_Precache();
 
 	if ( !Q_stricmp( "gonk", type))
 	{
