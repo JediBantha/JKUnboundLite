@@ -107,6 +107,82 @@ qboolean Rosh_BeingHealed( gentity_t *self );
 static qboolean enemy_in_striking_range = qfalse;
 static int	jediSpeechDebounceTime[TEAM_NUM_TEAMS];//used to stop several jedi from speaking all at once
 
+qboolean NPC_IsCultist( gentity_t *ent )
+{
+	if ( !ent || !ent->client )
+	{
+		return qfalse;
+	}
+
+	if ( Q_stricmp( "cultist", ent->NPC_type ) )
+	{
+		return qfalse;
+	}
+
+	if ( Q_stricmp( "cultistcommando", ent->NPC_type ) )
+	{
+		return qfalse;
+	}
+
+	if ( Q_stricmp( "cultist_destroyer", ent->NPC_type ) || 
+		Q_stricmp( "cultist_drain", ent->NPC_type ) || 
+		Q_stricmp( "cultist_grip", ent->NPC_type ) || 
+		Q_stricmp( "cultist_lightning", ent->NPC_type ) )
+	{
+		return qfalse;
+	}
+
+	if ( Q_stricmp( "cultist_saber", ent->NPC_type ) || 
+		Q_stricmp( "cultist_saber2", ent->NPC_type ) )
+	{
+		return qfalse;
+	}
+
+	if ( Q_stricmp( "cultist_saber_throw", ent->NPC_type ) || 
+		Q_stricmp( "cultist_saber_throw2", ent->NPC_type ) )
+	{
+		return qfalse;
+	}
+
+	if ( Q_stricmp( "cultist_saber_med", ent->NPC_type ) || 
+		Q_stricmp( "cultist_saber_med2", ent->NPC_type ) )
+	{
+		return qfalse;
+	}
+
+	if ( Q_stricmp( "cultist_saber_med_throw", ent->NPC_type ) || 
+		Q_stricmp( "cultist_saber_med_throw2", ent->NPC_type ) )
+	{
+		return qfalse;
+	}
+
+	if ( Q_stricmp( "cultist_saber_strong", ent->NPC_type ) || 
+		Q_stricmp( "cultist_saber_strong2", ent->NPC_type ) )
+	{
+		return qfalse;
+	}
+
+	if ( Q_stricmp( "cultist_saber_strong_throw", ent->NPC_type ) || 
+		Q_stricmp( "cultist_saber_strong_throw2", ent->NPC_type ) )
+	{
+		return qfalse;
+	}
+
+	if ( Q_stricmp( "cultist_saber_all", ent->NPC_type ) || 
+		Q_stricmp( "cultist_saber_all2", ent->NPC_type ) )
+	{
+		return qfalse;
+	}
+
+	if ( Q_stricmp( "cultist_saber_all_throw", ent->NPC_type ) || 
+		Q_stricmp( "cultist_saber_all_throw2", ent->NPC_type ) )
+	{
+		return qfalse;
+	}
+
+	return qtrue;
+}
+
 void NPC_CultistDestroyer_Precache( void )
 {
 	G_SoundIndex( "sound/movers/objects/green_beam_lp2.wav" );
@@ -149,6 +225,7 @@ void Jedi_ClearTimers( gentity_t *ent )
 	TIMER_Set( ent, "noRetreat", 0 );
 	TIMER_Set( ent, "holdLightning", 0 );
 	TIMER_Set( ent, "gripping", 0 );
+	TIMER_Set( ent, "saberThrow", 0 );
 	TIMER_Set( ent, "draining", 0 );
 	TIMER_Set( ent, "noturn", 0 );
 	TIMER_Set( ent, "specialEvasion", 0 );
@@ -1379,7 +1456,8 @@ static void Jedi_AdjustSaberAnimLevel( gentity_t *self, int newLevel )
 
 static void Jedi_CheckDecreaseSaberAnimLevel( void )
 {
-	if ( !NPC->client->ps.weaponTime && !(ucmd.buttons&(BUTTON_ATTACK|BUTTON_ALT_ATTACK|BUTTON_FORCE_FOCUS)) )
+	if ( !NPC->client->ps.weaponTime 
+		&& !(ucmd.buttons & (BUTTON_ATTACK | BUTTON_ALT_ATTACK | BUTTON_FORCE_FOCUS)) )
 	{//not attacking
 		if ( TIMER_Done( NPC, "saberLevelDebounce" ) && !Q_irand( 0, 10 ) )
 		{
@@ -1505,6 +1583,7 @@ static void Jedi_CombatDistance( int enemy_dist )
 		ucmd.buttons &= ~BUTTON_WALKING;
 		return;
 	}
+
 	if ( enemy_dist < 128
 		&& NPC->enemy
 		&& NPC->enemy->client
@@ -1517,6 +1596,7 @@ static void Jedi_CombatDistance( int enemy_dist )
 			return;
 		}
 	}
+
 	if ( NPC->client->ps.forcePowersActive&(1<<FP_GRIP) )
 	{//when gripping, don't move
 		return;
@@ -1535,6 +1615,12 @@ static void Jedi_CombatDistance( int enemy_dist )
 	else if ( !TIMER_Done( NPC, "draining" ) )
 	{//stopped draining, clear timers just in case
 		TIMER_Set( NPC, "draining", -level.time );
+		TIMER_Set( NPC, "attackDelay", Q_irand( 0, 1000 ) );
+	}
+	
+	if ( !TIMER_Done( NPC, "saberThrow" ) )
+	{
+		TIMER_Set( NPC, "saberThrow", -level.time );
 		TIMER_Set( NPC, "attackDelay", Q_irand( 0, 1000 ) );
 	}
 
@@ -1596,14 +1682,21 @@ static void Jedi_CombatDistance( int enemy_dist )
 		{
 			Jedi_Advance();
 		}
+
 		if ( NPC->client->ps.weapon == WP_SABER //using saber
 			&& NPC->client->ps.saberEntityState == SES_LEAVING  //not returning yet
 			&& NPC->client->ps.forcePowerLevel[FP_SABERTHROW] > FORCE_LEVEL_1 //2nd or 3rd level lightsaber
 			&& !(NPC->client->ps.forcePowersActive&(1 << FP_SPEED))
 			&& !(NPC->client->ps.saberEventFlags&SEF_INWATER) )//saber not in water
 		{//hold it out there
-			ucmd.buttons |= BUTTON_ALT_ATTACK;
+			//ucmd.buttons |= BUTTON_ALT_ATTACK;
 			//FIXME: time limit?
+
+			if ( !TIMER_Done( NPC, "saberThrow" ) )
+			{
+				TIMER_Set( NPC, "saberThrow", -level.time );
+				TIMER_Set( NPC, "attackDelay", Q_irand( 0, 1000 ) );
+			}
 		}
 	}
 	else if ( !TIMER_Done( NPC, "taunting" ) )
@@ -1611,13 +1704,16 @@ static void Jedi_CombatDistance( int enemy_dist )
 		if ( enemy_dist <= 64 )
 		{//he's getting too close
 			ucmd.buttons |= BUTTON_ATTACK;
+
 			if ( !NPC->client->ps.saberInFlight )
 			{
 				NPC->client->ps.SaberActivate();
 			}
+
 			TIMER_Set( NPC, "taunting", -level.time );
 		}
-		else if ( NPC->client->ps.torsoAnim == BOTH_GESTURE1 && NPC->client->ps.torsoAnimTimer < 2000 )
+		else if ( NPC->client->ps.torsoAnim == BOTH_GESTURE1 
+			&& NPC->client->ps.torsoAnimTimer < 2000 )
 		{//we're almost done with our special taunt
 			//FIXME: this doesn't always work, for some reason
 			if ( !NPC->client->ps.saberInFlight )
@@ -1806,6 +1902,15 @@ static void Jedi_CombatDistance( int enemy_dist )
 				usedForce = qtrue;
 				//FIXME: check level of heal and know not to move or attack when healing
 			}
+			else if ( (NPC->client->ps.forcePowersKnown&(1<<FP_TELEPATHY)) != 0
+				&& (NPC->client->ps.forcePowersActive&(1<<FP_TELEPATHY)) == 0
+				&& Q_irand( 0, 1 ) )
+			{
+				/*
+				Jedi_Telepathy();
+				usedForce = qtrue;
+				*/
+			}
 			else if ( (NPC->client->ps.forcePowersKnown&(1<<FP_PROTECT)) != 0
 				&& (NPC->client->ps.forcePowersActive&(1<<FP_PROTECT)) == 0
 				&& Q_irand( 0, 1 ) )
@@ -1831,15 +1936,19 @@ static void Jedi_CombatDistance( int enemy_dist )
 		}
 		if ( enemy_dist > 384 )
 		{//FIXME: check for enemy facing away and/or moving away
-			if ( !Q_irand( 0, 10 ) && NPCInfo->blockedSpeechDebounceTime < level.time && jediSpeechDebounceTime[NPC->client->playerTeam] < level.time )
+			if ( !Q_irand( 0, 10 ) 
+				&& NPCInfo->blockedSpeechDebounceTime < level.time 
+				&& jediSpeechDebounceTime[NPC->client->playerTeam] < level.time )
 			{
 				if ( NPC_ClearLOS( NPC->enemy ) )
 				{
 					G_AddVoiceEvent( NPC, Q_irand( EV_JCHASE1, EV_JCHASE3 ), 3000 );
 				}
+				
 				jediSpeechDebounceTime[NPC->client->playerTeam] = NPCInfo->blockedSpeechDebounceTime = level.time + 3000;
 			}
 		}
+
 		//Unless we're totally hiding, go after him
 		if ( NPCInfo->stats.aggression > 0 )
 		{//approach enemy
@@ -1888,7 +1997,9 @@ static void Jedi_CombatDistance( int enemy_dist )
 				&& !(NPC->client->ps.forcePowersActive&(1 << FP_SPEED))
 				&& !(NPC->client->ps.saberEventFlags&SEF_INWATER) )//saber not in water
 			{//throw saber
-				ucmd.buttons |= BUTTON_ALT_ATTACK;
+				//ucmd.buttons |= BUTTON_ALT_ATTACK;
+				TIMER_Set( NPC, "saberThrow", Q_irand( 3000, 5000 ) );
+				TIMER_Set( NPC, "attackDelay", 3000 );
 			}
 		}
 		else if ( NPC->enemy && NPC->enemy->client && //valid enemy
@@ -2074,7 +2185,9 @@ static void Jedi_CombatDistance( int enemy_dist )
 								&& !(NPC->client->ps.forcePowersActive&(1 << FP_SPEED))
 								&& !(NPC->client->ps.saberEventFlags&SEF_INWATER) )//saber not in water
 							{//throw saber
-								ucmd.buttons |= BUTTON_ALT_ATTACK;
+								//ucmd.buttons |= BUTTON_ALT_ATTACK;
+								TIMER_Set( NPC, "saberThrow", Q_irand( 3000, 5000 ) );
+								TIMER_Set( NPC, "attackDelay", 3000 );
 							}
 						}
 					}
@@ -2084,7 +2197,9 @@ static void Jedi_CombatDistance( int enemy_dist )
 							&& !(NPC->client->ps.forcePowersActive&(1 << FP_SPEED))
 							&& !(NPC->client->ps.saberEventFlags&SEF_INWATER) )//saber not in water
 						{//throw saber
-							ucmd.buttons |= BUTTON_ALT_ATTACK;
+							//ucmd.buttons |= BUTTON_ALT_ATTACK;
+							TIMER_Set( NPC, "saberThrow", Q_irand( 3000, 5000 ) );
+							TIMER_Set( NPC, "attackDelay", 3000 );
 						}
 					}
 				}
@@ -5138,6 +5253,11 @@ static void Jedi_TimersApply( void )
 	if ( !TIMER_Done( NPC, "holdLightning" ) )
 	{//hold down the lightning key
 		ucmd.buttons |= BUTTON_FORCE_LIGHTNING;
+	}
+
+	if ( !TIMER_Done( NPC, "saberThrow" ) )
+	{
+		ucmd.buttons |= BUTTON_ALT_ATTACK;
 	}
 }
 

@@ -3627,6 +3627,7 @@ extern void G_DrivableATSTDie( gentity_t *self );
 extern void JET_FlyStop( gentity_t *self );
 extern void VehicleExplosionDelay( gentity_t *self );
 extern void NPC_LeaveTroop(gentity_t* actor);
+extern qboolean NPC_IsCultist(gentity_t *ent);
 extern void Rancor_DropVictim( gentity_t *self );
 extern void Wampa_DropVictim( gentity_t *self );
 extern void WP_StopForceHealEffects( gentity_t *self );
@@ -3989,53 +3990,122 @@ extern void RunEmplacedWeapon( gentity_t *ent, usercmd_t **ucmd );
 			}
 		}
 	}
-
-	gitem_t		*item;
+	
+	gitem_t			*item;
 
 	switch ( self->client->NPC_class )
 	{
 	case CLASS_SHADOWTROOPER://drop a force crystal
-		if ( Q_stricmpn("shadowtrooper", self->NPC_type, 13 ) == 0 )
+		if ( Q_stricmpn( "shadowtrooper", self->NPC_type, 13 ) == 0 )
 		{
-			item = FindItemForInventory( INV_FORCE_GEM );
-
-			Drop_Item( self, item, 0, qtrue );
+			Drop_Item( self, FindItemForInventory( INV_FORCE_GEM ), 0, qtrue );
+			
+			if ( !Q_irand( 0, (5 + (G_DifficultyLimit() * 2))) )
+			{
+				Drop_Item( self, FindItemForInventory( INV_BACTA_CANISTER ), 0, qtrue );
+			}
 		}
 		else
 		{
 			if ( !Q_irand( 0, (5 + (G_DifficultyLimit() * 2))) )
 			{
-				item = FindItemForInventory( INV_FORCE_GEM );
+				switch ( Q_irand( 0, 1 ) )
+				{
+				case 0:
+					item = FindItemForInventory( INV_BACTA_CANISTER );
+					break;
+				case 1:
+					item = FindItemForInventory( INV_FORCE_GEM );
+					break;
+				}
+
 
 				Drop_Item( self, item, 0, qtrue );
 			}
 		}
 		break;
 	case CLASS_REBORN:
-		if (!Q_irand(0, (5 + (G_DifficultyLimit() * 2))))
+		if ( self->NPC->rank > RANK_LT )
 		{
-			item = FindItemForInventory( INV_FORCE_GEM );
+			if ( !Q_irand( 0, (5 + (G_DifficultyLimit() * 2)) ) )
+			{
+				switch ( Q_irand( 0, 1 ) )
+				{
+				case 0:
+					item = FindItemForInventory( INV_BACTA_CANISTER );
+					break;
+				case 1:
+					item = FindItemForInventory( INV_FORCE_GEM );
+					break;
+				}
 
-			Drop_Item(self, item, 0, qtrue);
+				Drop_Item( self, item, 0, qtrue );
+			}
+		}
+		break;
+	case CLASS_IMPWORKER:
+		if ( !Q_irand( 0, (5 + (G_DifficultyLimit() * 2)) ) )
+		{
+			switch ( Q_irand( 0, 1 ) )
+			{
+			case 0:
+				item = FindItemForInventory( INV_SEEKER );
+				break;
+			case 1:
+				item = FindItemForInventory( INV_SENTRY );
+				break;
+			}
+
+			Drop_Item( self, item, 0, qtrue );
+		}
+		break;
+	case CLASS_RODIAN:
+	case CLASS_SABOTEUR:
+		if ( !Q_irand( 0, (5 + (G_DifficultyLimit() * 2)) ) )
+		{
+			switch ( Q_irand( 0, 1 ) )
+			{
+			case 0:
+				item = FindItemForInventory( INV_BACTA_CANISTER );
+				break;
+			case 1:
+				item = FindItemForInventory( INV_SENTRY );
+				break;
+			}
+
+			Drop_Item( self, item, 0, qtrue );
 		}
 		break;
 	default:
-		if ( NPC_IsDroidClass( self ) )
+		if ( self->s.number != 0 )
 		{
-			gitem_t *batteries = FindItem( "item_battery" );
-			
-			switch ( self->client->NPC_class )
+			if ( NPC_IsDroidClass( self ) )
 			{
-			case CLASS_GONK:
-			case CLASS_INTERROGATOR:
-			case CLASS_MARK1:
-			case CLASS_PROBE:
-			case CLASS_R2D2:
-			case CLASS_R5D2:
-				Drop_Item(self, batteries, 0, qtrue);
-				break;
-			default:
-				break;
+				gitem_t *batteries = FindItem( "item_battery" );
+			
+				switch ( self->client->NPC_class )
+				{
+				case CLASS_GONK:
+				case CLASS_MARK1:
+				case CLASS_PROBE:
+				case CLASS_SENTRY:
+					Drop_Item(self, batteries, 0, qtrue);
+					break;
+				default:
+					break;
+				}
+			}
+			else
+			{
+				if ( self->NPC->rank > RANK_CREWMAN && !NPC_IsJediClass( self ) )
+				{
+					if ( !Q_irand( 0, (5 + (G_DifficultyLimit() * 2)) ) )
+					{
+						item = FindItemForInventory( INV_BACTA_CANISTER );
+					
+						Drop_Item( self, item, 0, qtrue );
+					}
+				}
 			}
 		}
 		break;
@@ -5231,7 +5301,7 @@ int CheckArmor (gentity_t *ent, int damage, int dflags, int mod)
 			armorThreshold = 50;
 		}
 
-		if ( g_spskill->integer > 2 )
+		if ( !ent->s.number && g_spskill->integer > 2 )
 		{
 			armorThreshold = (armorThreshold + (floor((float)armorThreshold / 4.0f) * (g_spskill->integer - 2)));
 
@@ -5248,7 +5318,7 @@ int CheckArmor (gentity_t *ent, int damage, int dflags, int mod)
 		}
 		else
 		{
-			if ( !ent->s.number && client->NPC_class == CLASS_ATST )
+			if ( !ent->s.number && client->NPC_class == CLASS_ATST)
 			{//player in ATST... armor takes *all* the damage
 				save = damage;
 			}
@@ -5256,7 +5326,7 @@ int CheckArmor (gentity_t *ent, int damage, int dflags, int mod)
 			{
 				double	armorProtection = ARMOR_PROTECTION;
 
-				if ( g_spskill->integer > 2 )
+				if ( !ent->s.number && g_spskill->integer > 2 )
 				{
 					armorProtection = (ARMOR_PROTECTION + (0.15 * (g_spskill->integer - 2)));
 
