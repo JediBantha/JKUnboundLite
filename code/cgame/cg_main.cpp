@@ -4692,18 +4692,6 @@ const char *ForcePowerLevelDesc( int forcePower )
 			int	rageDuration = (5 * (powerLevel - 1));
 			int	ragePercent = (25 + (25 * (powerLevel - 1)));
 
-			switch ( powerLevel )
-			{
-			case 4:
-			case 5:
-			case 6:
-				rageDuration = 20;
-				break;
-			case 7:
-			default:
-				break;
-			}
-
 			if ( rageDuration > Q3_INFINITE )
 			{
 				rageDuration = Q3_INFINITE;
