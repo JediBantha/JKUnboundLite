@@ -14632,6 +14632,12 @@ void WP_ForcePowerStop( gentity_t *self, forcePowers_t forcePower )
 			self->s.loopSound = 0;
 		}
 		break;
+	case FP_SABERTHROW:
+		if ( self->NPC )
+		{
+			TIMER_Set( self, "saberThrow", -level.time );
+		}
+		break;
 	case FP_RAGE:
 		self->client->ps.forceRageRecoveryTime = level.time + ForceRageDuration( self );//recover for 10 seconds
 
@@ -15241,9 +15247,9 @@ static void WP_ForcePowerRun( gentity_t *self, forcePowers_t forcePower, usercmd
 					{
 						dist = ForceGrip3MaxDistance( self );//FORCE_GRIP_3_MAX_DIST;
 					}
-					else if ( dist < ForceGrip3MinDistance( self ) )
+					else if ( dist < FORCE_GRIP_3_MIN_DIST )
 					{
-						dist = ForceGrip3MinDistance( self );//FORCE_GRIP_3_MIN_DIST;
+						dist = FORCE_GRIP_3_MIN_DIST;
 					}
 					
 					VectorMA( self->client->renderInfo.handLPoint, dist, dir, gripOrg );

@@ -1953,6 +1953,7 @@ qboolean NPC_ParseParms( const char *NPCName, gentity_t *NPC )
 	char	surfOff[1024]={0};
 	char	surfOn[1024]={0};
 	qboolean parsingPlayer = qfalse;
+	int handicap = gi.Cvar_VariableIntegerValue("handicap");
 
 	strcpy(customSkin,"default");
 	if ( !NPCName || !NPCName[0])
@@ -3081,24 +3082,25 @@ qboolean NPC_ParseParms( const char *NPCName, gentity_t *NPC )
 				continue;
 			}
 
-			if ( !Q_stricmp( token, "armorPercent" ))
+			if ( !Q_stricmp( token, "armorPercent" ) )
 			{
-				if (COM_ParseFloat(&p, &f)) 
+				if ( COM_ParseFloat( &p, &f ) )
 				{
-					SkipRestOfLine(&p);
-					continue;
-				}
-				
-				if (f < 0.0f)
-				{
-					gi.Printf("bad %s in NPC '%s'\n", token, NPCName);
+					SkipRestOfLine( &p );
 					continue;
 				}
 
-				if ( f > 0.0f )
+				if ( f < 0.0f )
 				{
-					NPC->client->ps.stats[STAT_ARMOR] = (NPC->client->ps.stats[STAT_MAX_HEALTH] * f);
+					gi.Printf( S_COLOR_YELLOW"WARNING: bad %s in NPC '%s'\n", token, NPCName );
+					continue;
 				}
+				
+				if ( NPC->NPC )
+				{
+					NPC->client->ps.stats[STAT_ARMOR] = floor((float)stats->health * f);
+				}
+				continue;
 			}
 
 			// fullName
@@ -4049,6 +4051,7 @@ qboolean NPC_ParseParms( const char *NPCName, gentity_t *NPC )
 					SkipRestOfLine( &p );
 					continue;
 				}
+
 				//cap
 				if ( n > SS_STAFF )
 				{
@@ -4058,6 +4061,7 @@ qboolean NPC_ParseParms( const char *NPCName, gentity_t *NPC )
 				{
 					n = SS_FAST;
 				}
+
 				if ( n )
 				{//set
 					NPC->client->ps.saberStylesKnown |= ( 1 << n );
@@ -4066,7 +4070,9 @@ qboolean NPC_ParseParms( const char *NPCName, gentity_t *NPC )
 				{//clear
 					NPC->client->ps.saberStylesKnown &= ~( 1 << n );
 				}
+
 				NPC->client->ps.saberAnimLevel = n;
+				
 				if ( parsingPlayer )
 				{
 					cg.saberAnimLevelPending = n;
@@ -4078,6 +4084,7 @@ qboolean NPC_ParseParms( const char *NPCName, gentity_t *NPC )
 			{
 				gi.Printf( "WARNING: unknown keyword '%s' while parsing '%s'\n", token, NPCName );
 			}
+
 			SkipRestOfLine( &p );
 		}
 #ifdef _WIN32
