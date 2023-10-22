@@ -37,7 +37,7 @@ Overcharged Health decays faster per level of difficulty.
 Handicap is set to 100 regardless of difficulty.
 Player deals 25% less damage per level of difficulty, down to a minimum of of 25%.
 NPCs deals 50% more damage per level of difficulty to the player.
-NPC projectiles travel faster per level of difficulty.
+NPC projectiles travel 10% faster per level of difficulty.
 NPC's known Force Powers scale upwards by 1 point per level of difficulty.
 
 
