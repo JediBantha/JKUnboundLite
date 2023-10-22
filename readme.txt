@@ -2,6 +2,9 @@ Requires assets from Jedi Outcast.
 
 Jedi Knight Unbound is Singleplayer-only until further notice.
 
+Known Issues:
+In-game Inventory bindings don't appear until you hover your cursor over them
+
 Gameplay changes:
 Damage dealt by the Disruptor Rifle ignores personal shields.
 Added 3 new inventory items - Jetpack, Cloak and Artusian Crystal.
