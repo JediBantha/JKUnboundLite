@@ -2447,6 +2447,14 @@ void SP_NPC_Alora( gentity_t *self)
 	{
 		self->NPC_type = "alora_dual";
 	}
+	else if ( (self->spawnflags&2) )
+	{
+		self->NPC_type = "alora_single";
+	}
+	else if ( (self->spawnflags&4) )
+	{
+		self->NPC_type = "alora_staff";
+	}
 	else
 	{
 		self->NPC_type = "alora";
@@ -2636,7 +2644,7 @@ SHY - Spawner is shy
 Ally Jedi NPC Buddy - tags along with player
 */
 extern cvar_t	*g_char_model;
-void SP_NPC_Jedi( gentity_t *self)
+void SP_NPC_Jedi( gentity_t *self )
 {
 	if(!self->NPC_type)
 	{
@@ -2715,6 +2723,80 @@ void SP_NPC_Jedi( gentity_t *self)
 			else
 			{
 				self->NPC_type = "Jedi2";
+			}
+		}
+	}
+
+	SP_NPC_spawner( self );
+}
+
+void SP_NPC_DarkJedi( gentity_t *self )
+{
+	if(!self->NPC_type)
+	{
+		if ( self->spawnflags & 4 )
+		{
+			int sanityCheck = 20;
+			
+			while ( sanityCheck-- )
+			{
+				switch( Q_irand( 0, 11 ) )
+				{
+				case 0:
+					self->NPC_type = "darkjedi_hf1";
+					break;
+				case 1:
+					self->NPC_type = "darkjedi_hf2";
+					break;
+				case 2:
+					self->NPC_type = "darkjedi_hm1";
+					break;
+				case 3:
+					self->NPC_type = "darkjedi_hm2";
+					break;
+				case 4:
+					self->NPC_type = "darkjedi_kdm1";
+					break;
+				case 5:
+					self->NPC_type = "darkjedi_kdm2";
+					break;
+				case 6:
+					self->NPC_type = "darkjedi_rm1";
+					break;
+				case 7:
+					self->NPC_type = "darkjedi_rm2";
+					break;
+				case 8:
+					self->NPC_type = "darkjedi_tf1";
+					break;
+				case 9:
+					self->NPC_type = "darkjedi_tf2";
+					break;
+				case 10:
+					self->NPC_type = "darkjedi_zf1";
+					break;
+				case 11:
+				default:
+					self->NPC_type = "darkjedi_zf2";
+					break;
+				}
+
+				if ( strstr( self->NPC_type, g_char_model->string ) != NULL )
+				{
+					continue;
+				}
+				break;
+			}
+		}
+		else
+		{
+			if ( Q_irand( 0, 1 ) )
+			{
+				self->NPC_type = "DarkJedi";
+			}
+			else
+			{
+				self->NPC_type = "DarkJedi2";
 			}
 		}
 	}
@@ -3374,6 +3456,10 @@ void SP_NPC_Reborn_New( gentity_t *self)
 			{
 				self->NPC_type = "RebornMasterStaff";
 			}
+			else if ( (self->spawnflags&4) )
+			{
+				self->NPC_type = "RebornMasterMelee";
+			}
 			else
 			{
 				self->NPC_type = "RebornMaster";
@@ -3389,6 +3475,10 @@ void SP_NPC_Reborn_New( gentity_t *self)
 			{
 				self->NPC_type = "reborn_staff2";
 			}
+			else if ( (self->spawnflags&4) )
+			{
+				self->NPC_type = "reborn_melee2";
+			}
 			else
 			{
 				self->NPC_type = "reborn_new2";
@@ -3403,6 +3493,10 @@ void SP_NPC_Reborn_New( gentity_t *self)
 			else if ( (self->spawnflags&2) )
 			{
 				self->NPC_type = "reborn_staff";
+			}
+			else if ( (self->spawnflags&4) )
+			{
+				self->NPC_type = "reborn_melee";
 			}
 			else
 			{
@@ -3654,6 +3748,23 @@ SHY - Spawner is shy
 void SP_NPC_Cultist_Destroyer( gentity_t *self)
 {
 	self->NPC_type = "cultist_destroyer";
+	SP_NPC_spawner( self );
+}
+
+void SP_NPC_Cultist_Adept( gentity_t *self )
+{
+	if ( !self->NPC_type )
+	{
+		if ( self->spawnflags & 1 )
+		{
+			self->NPC_type = "cultist_adept_melee";
+		}
+		else
+		{
+			self->NPC_type = "cultist_adept";
+		}
+	}
+
 	SP_NPC_spawner( self );
 }
 
@@ -4294,11 +4405,18 @@ static void NPC_Spawn_f(void)
 		NPCspawner->message = "key";
 		NPCspawner->NPC_type = "imperial";
 	}
+
 	if ( !Q_stricmp( "jedi_random", NPCspawner->NPC_type ) )
 	{//special case, for testing
 		NPCspawner->NPC_type = NULL;
 		NPCspawner->spawnflags |= 4;
 		SP_NPC_Jedi( NPCspawner );
+	}
+	else if ( !Q_stricmp( "darkjedi_random", NPCspawner->NPC_type ) )
+	{
+		NPCspawner->NPC_type = NULL;
+		NPCspawner->spawnflags |= 4;
+		SP_NPC_DarkJedi( NPCspawner );
 	}
 	else if ( isVehicle )
 	{
