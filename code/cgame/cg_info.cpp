@@ -675,7 +675,7 @@ static void CG_GetLoadScreenInfo(int *weaponBits,int *forceBits)
 	if (s[0])
 	{
 	//				|general info				  |-force powers
-		sscanf( s, "%i %i %i %i %i %i %i %f %f %f %i %i",
+		sscanf( s, "%i %i %i %i %i %i %i %i %i %f %f %f %i %i",
 				&iDummy,	//	&client->ps.stats[STAT_HEALTH],
 				&iDummy,	//	&client->ps.stats[STAT_ARMOR],
 				&*weaponBits,//	&client->ps.stats[STAT_WEAPONS],
@@ -683,6 +683,8 @@ static void CG_GetLoadScreenInfo(int *weaponBits,int *forceBits)
 				&iDummy,	//	&client->ps.weapon,
 				&iDummy,	//	&client->ps.weaponstate,
 				&iDummy,	//	&client->ps.batteryCharge,
+				&iDummy,	//	&client->ps.jetpackFuel,
+				&iDummy,	//	&client->ps.cloakFuel,
 				&fDummy,	//	&client->ps.viewangles[0],
 				&fDummy,	//	&client->ps.viewangles[1],
 				&fDummy,	//	&client->ps.viewangles[2],

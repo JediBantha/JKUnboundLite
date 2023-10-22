@@ -405,6 +405,7 @@ static void CG_DrawForcePower(const centity_t *cent,const int xPos,const int yPo
 
 	inc = (float)  actualEnt->gent->client->ps.forcePowerMax / MAX_HUD_TICS;
 	value = actualEnt->gent->client->ps.forcePower;
+
 	if ( value > actualEnt->gent->client->ps.forcePowerMax )
 	{//supercharged with force
 		extra = value - actualEnt->gent->client->ps.forcePowerMax;
@@ -415,7 +416,15 @@ static void CG_DrawForcePower(const centity_t *cent,const int xPos,const int yPo
 	{
 		if ( extra )
 		{//supercharged
-			memcpy(calcColor, colorTable[CT_WHITE], sizeof(vec4_t));
+			if (actualEnt->currentState.weapon == WP_SCEPTER)
+			{
+				memcpy(calcColor, colorTable[CT_AMMO_DISRUPTOR], sizeof(vec4_t));
+			}
+			else
+			{
+				memcpy(calcColor, colorTable[CT_AMMO_DEMP2], sizeof(vec4_t));//colorTable[CT_WHITE]
+			}
+
 			percent = 0.75f + (sin( cg.time * 0.005f )*((extra/actualEnt->gent->client->ps.forcePowerMax)*0.25f));
 			
 			if ( percent > 1.75f )
@@ -439,7 +448,14 @@ static void CG_DrawForcePower(const centity_t *cent,const int xPos,const int yPo
 			}
 			else
 			{
-				memcpy(calcColor,  colorTable[CT_WHITE], sizeof(vec4_t));
+				if ( actualEnt->currentState.weapon == WP_SCEPTER )
+				{
+					memcpy(calcColor,  colorTable[CT_AMMO_DISRUPTOR], sizeof(vec4_t));
+				}
+				else
+				{
+					memcpy(calcColor, colorTable[CT_AMMO_DEMP2], sizeof(vec4_t));//colorTable[CT_WHITE]
+				}
 			}
 
 			percent = value / inc;
@@ -453,11 +469,19 @@ static void CG_DrawForcePower(const centity_t *cent,const int xPos,const int yPo
 			}
 			else
 			{
-				memcpy(calcColor,  colorTable[CT_WHITE], sizeof(vec4_t));
+				if ( actualEnt->currentState.weapon == WP_SCEPTER )
+				{
+					memcpy(calcColor,  colorTable[CT_AMMO_DISRUPTOR], sizeof(vec4_t));
+				}
+				else
+				{
+					memcpy(calcColor, colorTable[CT_AMMO_DEMP2], sizeof(vec4_t));//colorTable[CT_WHITE]
+				}
 			}
 		}
 
-		cgi_R_SetColor( calcColor);
+		cgi_R_SetColor( calcColor );
+
 		CG_DrawPic( forceTics[i].xPos,
 			forceTics[i].yPos,
 			forceTics[i].width,
@@ -473,7 +497,14 @@ static void CG_DrawForcePower(const centity_t *cent,const int xPos,const int yPo
 	}
 	else
 	{
-		cgi_R_SetColor( otherHUDBits[OHB_FORCEAMOUNT].color );
+		if ( actualEnt->currentState.weapon == WP_SCEPTER )
+		{
+			cgi_R_SetColor( colorTable[CT_AMMO_DISRUPTOR] );
+		}
+		else
+		{
+			cgi_R_SetColor( colorTable[CT_AMMO_DEMP2] );//otherHUDBits[OHB_FORCEAMOUNT].color
+		}
 	}
 
 	// Print force numeric amount
@@ -500,14 +531,25 @@ static void CG_DrawSaberStyle(const centity_t	*cent,const int xPos,const int yPo
 {
 	int index;
 
-	if (!cent->currentState.weapon ) // We don't have a weapon right now
+	if ( !cent->currentState.weapon ) // We don't have a weapon right now
 	{
 		return;
 	}
 
-	if ( cent->currentState.weapon != WP_SABER || !cent->gent )
+	if ( !cent->gent )
 	{
 		return;
+	}
+
+	switch ( cent->currentState.weapon )
+	{
+	case WP_SABER:
+	case WP_MELEE:
+	case WP_TUSKEN_STAFF:
+		break;
+	default:
+		return;
+		break;
 	}
 
 	cgi_R_SetColor( colorTable[CT_WHITE] );
@@ -3637,7 +3679,7 @@ static void CG_ScanForCrosshairEntity( qboolean scanAll )
 		}
 	}
 
-	if ( !cg_forceCrosshair )
+	if ( !cg_forceCrosshair || !cg_forceLightCrosshair )
 	{
 		if ( cg_dynamicCrosshair.integer )
 		{//100% accurate

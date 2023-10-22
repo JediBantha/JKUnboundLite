@@ -4876,7 +4876,13 @@ void CG_DrawDataPadForceSelect( void )
 				break;
 			}
 
-			CG_DrawPic( holdX, graphicYPos, smallIconSize, smallIconSize, overlay );
+			CG_DrawPic( 
+				holdX, 
+				graphicYPos, 
+				smallIconSize, 
+				smallIconSize, 
+				overlay 
+			);
 		}
 
 		if (force_icons[showDataPadPowers[i]])
@@ -4890,7 +4896,14 @@ void CG_DrawDataPadForceSelect( void )
 	{
 
 		cgi_R_SetColor(colorTable[CT_WHITE]);
-		CG_DrawPic( centerXPos-(bigIconSize/2), (graphicYPos-((bigIconSize-smallIconSize)/2)), bigIconSize, bigIconSize, force_icons[showDataPadPowers[cg.DataPadforcepowerSelect]] );
+
+		CG_DrawPic( 
+			centerXPos-(bigIconSize/2), 
+			(graphicYPos-((bigIconSize-smallIconSize)/2)), 
+			bigIconSize, 
+			bigIconSize, 
+			force_icons[showDataPadPowers[cg.DataPadforcepowerSelect]] 
+		);
 
 		// New force power
 		if (((cg_updatedDataPadForcePower1.integer - 1) == showDataPadPowers[cg.DataPadforcepowerSelect]) ||
