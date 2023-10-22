@@ -8599,36 +8599,34 @@ static void PM_Footsteps( void )
 								}
 								else
 								{
-									if ( pm->ps->weapon == WP_SABER && !pm->gent->client->ps.SaberActive() )
+									//if ( pm->ps->weapon == WP_SABER && !pm->gent->client->ps.SaberActive() )
 									{
-										PM_SetAnim(pm,SETANIM_LEGS,BOTH_STAND9,SETANIM_FLAG_NORMAL);
-									}
-									else
-									{
-										if ( !pm->gent->s.number )
+										if (!pm->gent->s.number)
 										{
-											if ( g_sex->string[0] == 'm' || g_sex->string[0] == 'n' )
+											if (g_sex->string[0] == 'm' || g_sex->string[0] == 'n')
 											{
-												PM_SetAnim(pm,SETANIM_LEGS,BOTH_STAND5,SETANIM_FLAG_NORMAL);
+												PM_SetAnim(pm, SETANIM_LEGS, BOTH_STAND5, SETANIM_FLAG_NORMAL);
 											}
-											else 
+											else
 											{
-												PM_SetAnim(pm,SETANIM_LEGS,BOTH_STAND1,SETANIM_FLAG_NORMAL);
+												PM_SetAnim(pm, SETANIM_LEGS, BOTH_STAND1, SETANIM_FLAG_NORMAL);
 											}
 										}
 										else
 										{
-											switch ( pm->gent->NPC->stats.sex )
+											switch (pm->gent->NPC->stats.sex)
 											{
 											case SEX_MALE:
 											case SEX_NEUTRAL:
-												PM_SetAnim(pm,SETANIM_LEGS,BOTH_STAND5,SETANIM_FLAG_NORMAL);
+												PM_SetAnim(pm, SETANIM_LEGS, BOTH_STAND5, SETANIM_FLAG_NORMAL);
 												break;
 											default:
-												PM_SetAnim(pm,SETANIM_LEGS,BOTH_STAND1,SETANIM_FLAG_NORMAL);
+												PM_SetAnim(pm, SETANIM_LEGS, BOTH_STAND1, SETANIM_FLAG_NORMAL);
 												break;
 											}
 										}
+
+										//PM_SetAnim(pm,SETANIM_LEGS,BOTH_STAND9,SETANIM_FLAG_NORMAL);
 									}
 								}
 								break;

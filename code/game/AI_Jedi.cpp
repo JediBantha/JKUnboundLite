@@ -6857,7 +6857,9 @@ qboolean Jedi_CheckKataAttack( void )
 							&& !Q_irand( 0, 9 ) )//10% chance overall
 						{//base on skill level
 							ucmd.upmove = 0;
+							
 							VectorClear( NPC->client->ps.moveDir );
+							
 							if ( g_saberNewControlScheme->integer )
 							{
 								ucmd.buttons |= BUTTON_FORCE_FOCUS;
@@ -6866,6 +6868,7 @@ qboolean Jedi_CheckKataAttack( void )
 							{
 								ucmd.buttons |= BUTTON_ALT_ATTACK;
 							}
+
 							return qtrue;
 						}
 					}
@@ -6892,7 +6895,9 @@ static void Jedi_Attack( void )
 		{
 			Jedi_FaceEnemy( qtrue );
 		}
+		
 		NPC_UpdateAngles( qtrue, qtrue );
+		
 		if ( NPC->client->ps.torsoAnim == BOTH_KYLE_GRAB )
 		{//see if we grabbed enemy
 			if ( NPC->client->ps.torsoAnimTimer <= 200 )
@@ -6951,6 +6956,7 @@ static void Jedi_Attack( void )
 			else
 			{//the escalation in difficulty is nice, here, but cap it so it doesn't get *impossible* on hard
 				float maxChance	= (float)(RANK_LT)/2.0f+3.0f;//5?
+				
 				if ( !g_spskill->value )
 				{
 					chance = (float)(NPCInfo->rank)/2.0f;
@@ -6959,11 +6965,13 @@ static void Jedi_Attack( void )
 				{
 					chance = (float)(NPCInfo->rank)/2.0f+1.0f;
 				}
+
 				if ( chance > maxChance )
 				{
 					chance = maxChance;
 				}
 			}
+
 			if ( (NPCInfo->aiFlags&NPCAI_BOSS_CHARACTER) )
 			{
 				chance += Q_irand(0,2);
@@ -6972,6 +6980,7 @@ static void Jedi_Attack( void )
 			{
 				chance += Q_irand(-1,1);
 			}
+
 			if ( Q_flrand( -4.0f, chance ) >= 0.0f && !(NPC->client->ps.pm_flags&PMF_ATTACK_HELD) )
 			{
 				ucmd.buttons |= BUTTON_ATTACK;
@@ -6980,10 +6989,12 @@ static void Jedi_Attack( void )
 		NPC_UpdateAngles( qtrue, qtrue );
 		return;
 	}
+
 	//did we drop our saber?  If so, go after it!
 	if ( NPC->client->ps.saberInFlight )
 	{//saber is not in hand
-		if ( NPC->client->ps.saberEntityNum < ENTITYNUM_NONE && NPC->client->ps.saberEntityNum > 0 )//player is 0
+		if ( NPC->client->ps.saberEntityNum < ENTITYNUM_NONE 
+			&& NPC->client->ps.saberEntityNum > 0 )//player is 0
 		{//
 			if ( g_entities[NPC->client->ps.saberEntityNum].s.pos.trType == TR_STATIONARY )
 			{//fell to the ground, try to pick it up
@@ -6992,14 +7003,17 @@ static void Jedi_Attack( void )
 					NPC->client->ps.saberBlocked = BLOCKED_NONE;
 					NPCInfo->goalEntity = &g_entities[NPC->client->ps.saberEntityNum];
 					ucmd.buttons |= BUTTON_ATTACK;
+					
 					if ( NPC->enemy && NPC->enemy->health > 0 )
 					{//get our saber back NOW!
 						Jedi_Move( NPCInfo->goalEntity, qfalse );
 						NPC_UpdateAngles( qtrue, qtrue );
+						
 						if ( NPC->enemy->s.weapon == WP_SABER )
 						{//be sure to continue evasion
 							vec3_t	enemy_dir, enemy_movedir, enemy_dest;
 							float	enemy_dist, enemy_movespeed;
+							
 							Jedi_SetEnemyInfo( enemy_dest, enemy_dir, &enemy_dist, enemy_movedir, &enemy_movespeed, 300 );
 							Jedi_EvasionSaber( enemy_movedir, enemy_dist, enemy_dir );
 						}
@@ -7015,7 +7029,10 @@ static void Jedi_Attack( void )
 	{
 		if ( NPC->enemy->health <= 0
 			&& NPC->enemy->enemy == NPC
-			&& (NPC->client->playerTeam != TEAM_PLAYER||(NPC->client->NPC_class==CLASS_KYLE&&(NPC->spawnflags&1)&&NPC->enemy==player)) )//good guys don't gloat (unless it's Kyle having just killed his student
+			&& (NPC->client->playerTeam != TEAM_PLAYER || 
+				(NPC->client->NPC_class == CLASS_KYLE 
+					&& (NPC->spawnflags & 1) 
+					&& NPC->enemy == player)) )//good guys don't gloat (unless it's Kyle having just killed his student
 		{//my enemy is dead and I killed him
 			NPCInfo->enemyCheckDebounceTime = 0;//keep looking for others
 
@@ -7028,9 +7045,11 @@ static void Jedi_Attack( void )
 					TIMER_Set( NPC, "gloatTime", 10000 );
 					NPCInfo->walkDebounceTime = -1;
 				}
+
 				if ( !TIMER_Done( NPC, "gloatTime" ) )
 				{
-					if ( DistanceHorizontalSquared( NPC->client->renderInfo.eyePoint, NPC->enemy->currentOrigin ) > 4096 && (NPCInfo->scriptFlags&SCF_CHASE_ENEMIES) )//64 squared
+					if ( DistanceHorizontalSquared( NPC->client->renderInfo.eyePoint, NPC->enemy->currentOrigin ) > 4096 
+						&& (NPCInfo->scriptFlags & SCF_CHASE_ENEMIES) )//64 squared
 					{
 						NPCInfo->goalEntity = NPC->enemy;
 						Jedi_Move( NPC->enemy, qfalse );
@@ -7049,6 +7068,7 @@ static void Jedi_Attack( void )
 					NPCInfo->desiredPitch = 0;
 					NPCInfo->goalEntity = NULL;
 				}
+
 				Jedi_FaceEnemy( qtrue );
 				NPC_UpdateAngles( qtrue, qtrue );
 				return;
@@ -7100,6 +7120,7 @@ static void Jedi_Attack( void )
 							}
 						}
 					}
+
 					Jedi_FaceEnemy( qtrue );
 					NPC_UpdateAngles( qtrue, qtrue );
 					return;
@@ -7116,6 +7137,7 @@ static void Jedi_Attack( void )
 			if ( NPC->enemy->activator && NPC_ValidEnemy( NPC->enemy->activator ) )
 			{
 				gentity_t *turretOwner = NPC->enemy->activator;
+				
 				G_ClearEnemy( NPC );
 				G_SetEnemy( NPC, turretOwner );
 			}
@@ -7147,17 +7169,20 @@ static void Jedi_Attack( void )
 			G_ClearEnemy( NPC );
 		}
 	}
+
 	NPC_CheckEnemy( qtrue, qtrue );
 
 	if ( !NPC->enemy )
 	{
 		NPC->client->ps.saberBlocked = BLOCKED_NONE;
+		
 		if ( NPCInfo->tempBehavior == BS_HUNT_AND_KILL )
 		{//lost him, go back to what we were doing before
 			NPCInfo->tempBehavior = BS_DEFAULT;
 			NPC_UpdateAngles( qtrue, qtrue );
 			return;
 		}
+
 		Jedi_Patrol();//was calling Idle... why?
 		return;
 	}
@@ -7173,11 +7198,14 @@ static void Jedi_Attack( void )
 	{//this is really stupid, but okay...
 		ucmd.forwardmove = 0;
 		ucmd.rightmove = 0;
+
 		if ( ucmd.upmove > 0 )
 		{
 			ucmd.upmove = 0;
 		}
+
 		NPC->client->ps.forceJumpCharge = 0;
+		
 		VectorClear( NPC->client->ps.moveDir );
 	}
 
@@ -7354,38 +7382,45 @@ qboolean Rosh_BeingHealed( gentity_t *self )
 	{
 		return qtrue;
 	}
+
 	return qfalse;
 }
 
 qboolean Rosh_TwinPresent( gentity_t *self )
 {
 	gentity_t *foundTwin = G_Find( NULL, FOFS(NPC_type), "DKothos" );
+	
 	if ( !foundTwin
 		|| foundTwin->health < 0 )
 	{
 		foundTwin = G_Find( NULL, FOFS(NPC_type), "VKothos" );
 	}
+
 	if ( !foundTwin
 		|| foundTwin->health < 0 )
 	{//oh well, both twins are dead...
 		return qfalse;
 	}
+
 	return qtrue;
 }
 
 qboolean Rosh_TwinNearBy( gentity_t *self )
 {
 	gentity_t *foundTwin = G_Find( NULL, FOFS(NPC_type), "DKothos" );
+	
 	if ( !foundTwin
 		|| foundTwin->health < 0 )
 	{
 		foundTwin = G_Find( NULL, FOFS(NPC_type), "VKothos" );
 	}
+
 	if ( !foundTwin
 		|| foundTwin->health < 0 )
 	{//oh well, both twins are dead...
 		return qfalse;
 	}
+
 	if ( self->client
 		&& foundTwin->client )
 	{
@@ -7397,6 +7432,7 @@ qboolean Rosh_TwinNearBy( gentity_t *self )
 			return qtrue;
 		}
 	}
+
 	return qfalse;
 }
 

@@ -2231,11 +2231,12 @@ void G_RunFrame( int levelTime )
 			{ //using cloak, drain battery
 				if (ent->client->cloakDebReduce < level.time)
 				{
-					if (  ent->client->usercmd.forwardmove != 0 ||
-						ent->client->usercmd.rightmove != 0 ||
+					if ( ((ent->client->usercmd.forwardmove != 0 ||
+						ent->client->usercmd.rightmove != 0) 
+						&& !(ent->client->ps.pm_flags & PMF_DUCKED)) ||
 						(VectorLengthSquared( ent->client->ps.velocity ) 
-						&& ent->client->usercmd.upmove > 0) || 
-						ent->client->usercmd.buttons != 0 )
+						&& ent->client->ps.pm_flags & PMF_JUMP_HELD) || 
+						(ent->client->usercmd.buttons & BUTTON_USE) )
 					{
 						ent->client->ps.cloakFuel -= 2;
 					}

@@ -6265,6 +6265,18 @@ void ClientThink( int clientNum, usercmd_t *ucmd )
 					G_ClearViewEntity( ent );
 					freed = qtrue;
 				}
+				else if ( ent->client->ps.forcePower <= 0 )
+				{
+					ent->client->ps.forcePowersActive &= ~( 1 << FP_TELEPATHY );
+					G_ClearViewEntity( ent );
+					freed = qtrue;
+				}
+				else if ( ent->takedamage )
+				{
+					ent->client->ps.forcePowersActive &= ~( 1 << FP_TELEPATHY );
+					G_ClearViewEntity( ent );
+					freed = qtrue;
+				}
 				else if ( ucmd->upmove > 0 )
 				{//jumping gets you out of it FIXME: check some other button instead... like ESCAPE... so you could even have total control over an NPC?
 					ent->client->ps.forcePowersActive &= ~( 1 << FP_TELEPATHY );

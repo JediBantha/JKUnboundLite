@@ -533,6 +533,7 @@ void SP_NPC_Chewbacca( gentity_t *self );
 void SP_NPC_Bartender( gentity_t *self );
 void SP_NPC_MorganKatarn( gentity_t *self );
 void SP_NPC_Jedi( gentity_t *self );
+void SP_NPC_DarkJedi( gentity_t *self );
 void SP_NPC_Prisoner( gentity_t *self );
 void SP_NPC_Merchant( gentity_t *self );
 void SP_NPC_Rebel( gentity_t *self );
@@ -562,6 +563,7 @@ void SP_NPC_Cultist_Saber( gentity_t *self );
 void SP_NPC_Cultist_Saber_Powers( gentity_t *self );
 void SP_NPC_Cultist_Destroyer( gentity_t *self );
 void SP_NPC_Cultist_Commando( gentity_t *self );
+void SP_NPC_Cultist_Adept( gentity_t *self );
 void SP_NPC_ShadowTrooper( gentity_t *self );
 void SP_NPC_Saboteur( gentity_t *self );
 void SP_NPC_Monster_Murjj( gentity_t *self );
@@ -769,6 +771,7 @@ spawn_t	spawns[] = {
 	{"NPC_Bartender", SP_NPC_Bartender },
 	{"NPC_MorganKatarn", SP_NPC_MorganKatarn },
 	{"NPC_Jedi", SP_NPC_Jedi },
+	{"NPC_DarkJedi", SP_NPC_DarkJedi },
 	{"NPC_Prisoner", SP_NPC_Prisoner },
 	{"NPC_Merchant", SP_NPC_Merchant },
 	{"NPC_Rebel", SP_NPC_Rebel },
@@ -799,6 +802,7 @@ spawn_t	spawns[] = {
 	{"NPC_Cultist_Saber_Powers", SP_NPC_Cultist_Saber_Powers },
 	{"NPC_Cultist_Destroyer", SP_NPC_Cultist_Destroyer },
 	{"NPC_Cultist_Commando", SP_NPC_Cultist_Commando },
+	{"NPC_Cultist_Adept", SP_NPC_Cultist_Adept },
 	{"NPC_ShadowTrooper", SP_NPC_ShadowTrooper },
 	{"NPC_Saboteur", SP_NPC_Saboteur },
 	{"NPC_Monster_Murjj", SP_NPC_Monster_Murjj },
