@@ -454,10 +454,24 @@ void CG_RegisterWeapon( int weaponNum )
 		cgi_R_RegisterShader( "gfx/misc/dr1" );
 		break;
 
+	case WP_BLASTER_PISTOL: // enemy version
 	case WP_BRYAR_PISTOL:
-		cgs.effects.bryarShotEffect			= theFxScheduler.RegisterEffect( "bryar/shot" );
-											theFxScheduler.RegisterEffect( "bryar/NPCshot" );
-		cgs.effects.bryarPowerupShotEffect	= theFxScheduler.RegisterEffect( "bryar/crackleShot" );
+	case WP_JAWA:
+		if ( weaponNum == WP_BRYAR_PISTOL )
+		{
+			cgs.effects.bryarShotEffect			= theFxScheduler.RegisterEffect( "bryar/shot" );
+
+			theFxScheduler.RegisterEffect( "bryar/NPCshot" );
+			
+			cgs.effects.bryarPowerupShotEffect	= theFxScheduler.RegisterEffect( "bryar/crackleShot" );
+		}
+		else
+		{
+			theFxScheduler.RegisterEffect( "blaster_pistol/shot" );
+			theFxScheduler.RegisterEffect( "blaster_pistol/NPCshot" );
+			theFxScheduler.RegisterEffect( "blaster_pistol/crackleShot" );
+		}
+
 		cgs.effects.bryarWallImpactEffect	= theFxScheduler.RegisterEffect( "bryar/wall_impact" );
 		cgs.effects.bryarWallImpactEffect2	= theFxScheduler.RegisterEffect( "bryar/wall_impact2" );
 		cgs.effects.bryarWallImpactEffect3	= theFxScheduler.RegisterEffect( "bryar/wall_impact3" );
@@ -466,13 +480,6 @@ void CG_RegisterWeapon( int weaponNum )
 		// Note....these are temp shared effects
 		theFxScheduler.RegisterEffect( "blaster/deflect" );
 		theFxScheduler.RegisterEffect( "blaster/smoke_bolton" ); // note: this will be called game side
-		break;
-
-	case WP_BLASTER_PISTOL: // enemy version
-	case WP_JAWA:
-		theFxScheduler.RegisterEffect( "blaster_pistol/shot" );
-		theFxScheduler.RegisterEffect( "blaster_pistol/NPCshot" );
-		theFxScheduler.RegisterEffect( "blaster_pistol/crackleShot" );
 		break;
 
 	case WP_BLASTER:

@@ -8778,7 +8778,9 @@ Ghoul2 Insert End
 			//
 
 			// impulse flash
-			if ( cent->muzzleFlashTime > 0 && wData && !(cent->currentState.eFlags & EF_LOCKED_TO_WEAPON ))
+			if ( cent->muzzleFlashTime > 0 
+				&& wData 
+				&& !(cent->currentState.eFlags & EF_LOCKED_TO_WEAPON ))
 			{
 				int effect = 0;
 
@@ -8826,14 +8828,26 @@ Ghoul2 Insert End
 			{// Set the muzzle point
 				orientation_t orientation;
 
-				cgi_R_LerpTag( &orientation, weapon->weaponModel, gun.oldframe, gun.frame,
-					1.0f - gun.backlerp, "tag_flash" );
+				cgi_R_LerpTag( 
+					&orientation, 
+					weapon->weaponModel, 
+					gun.oldframe, 
+					gun.frame,
+					1.0f - gun.backlerp, 
+					"tag_flash" 
+				);
 
 				// FIXME: allow origin offsets along tag?
 				VectorCopy( gun.origin, cent->gent->client->renderInfo.muzzlePoint );
+				
 				for ( i = 0 ; i < 3 ; i++ )
 				{
-					VectorMA( cent->gent->client->renderInfo.muzzlePoint, orientation.origin[i], gun.axis[i], cent->gent->client->renderInfo.muzzlePoint );
+					VectorMA( 
+						cent->gent->client->renderInfo.muzzlePoint, 
+						orientation.origin[i], 
+						gun.axis[i], 
+						cent->gent->client->renderInfo.muzzlePoint 
+					);
 				}
 //				VectorCopy( gun.axis[0], cent->gent->client->renderInfo.muzzleDir );
 //				VectorAdd( gun.axis[0], orientation.axis[0], cent->gent->client->renderInfo.muzzleDir );

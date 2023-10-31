@@ -75,6 +75,11 @@ static void CG_DrawJetpackFuel( void )
 	float		y = JPFUELBAR_Y;
 	float		percent = ((float)player->client->ps.jetpackFuel / 100.0f) * JPFUELBAR_H;
 
+	if ( player->health <= 0 )
+	{
+		return;
+	}
+
 	if (percent >= JPFUELBAR_H)
 	{
 		return;
@@ -153,6 +158,11 @@ static void CG_DrawCloakFuel( void )
 	float		y = CLFUELBAR_Y;
 	float		percent = ((float)player->client->ps.cloakFuel / 100.0f) * CLFUELBAR_H;
 
+	if ( player->health <= 0 )
+	{
+		return;
+	}
+
 	if (percent >= CLFUELBAR_H)
 	{
 		return;
@@ -215,6 +225,84 @@ static void CG_DrawCloakFuel( void )
 		(y - 10.0f),
 		3,
 		player->client->ps.cloakFuel,
+		4,
+		8,
+		NUM_FONT_SMALL,
+		qfalse 
+	);
+}
+
+#define POISONBAR_H			100.0f
+#define POISONBAR_W			10.0f
+#define POISONBAR_X			(NULL + POISONBAR_W + 8.0f)
+#define	POISONBAR_Y			260.0f
+static void CG_DrawPoisonBar( void )
+{
+	gentity_t	*player = &g_entities[0];
+	vec4_t		aColor;
+	vec4_t		cColor;
+	float		x = POISONBAR_X;
+	float		y = POISONBAR_Y;
+	float		percent = ((float)player->client->poisonDamage / 100.0f) * POISONBAR_H;
+
+	if ( player->health <= 0 )
+	{
+		return;
+	}
+
+	if ( !player->client->poisonDamage )
+	{
+		return;
+	}
+
+	if (percent < 0.1f)
+	{
+		percent = 0.1f;
+	}
+
+	aColor[0] = 0.4f;
+	aColor[1] = 0.6f;
+	aColor[2] = 0.2f;
+	aColor[3] = 0.8f;
+
+	cColor[0] = 0.1f;
+	cColor[1] = 0.1f;
+	cColor[2] = 0.3f;
+	cColor[3] = 0.1f;
+
+	//draw the background (black)
+	CG_DrawRect(
+		x, 
+		y, 
+		POISONBAR_W, 
+		POISONBAR_H, 
+		1.0f, 
+		colorTable[CT_BLACK]
+	);
+
+	CG_FillRect(
+		x+1.0f, 
+		y+1.0f+(POISONBAR_H-percent), 
+		POISONBAR_W-1.0f, 
+		POISONBAR_H-1.0f-(POISONBAR_H-percent), 
+		aColor
+	);
+
+	CG_FillRect(
+		x+1.0f, 
+		y+1.0f, 
+		POISONBAR_W-1.0f, 
+		POISONBAR_H-percent, 
+		cColor
+	);
+
+	cgi_R_SetColor(aColor);
+
+	CG_DrawNumField(
+		(x - 5.0f),
+		(y - 10.0f),
+		3,
+		floor((float)player->client->poisonDamage * 0.5f),
 		4,
 		8,
 		NUM_FONT_SMALL,
@@ -416,14 +504,7 @@ static void CG_DrawForcePower(const centity_t *cent,const int xPos,const int yPo
 	{
 		if ( extra )
 		{//supercharged
-			if (actualEnt->currentState.weapon == WP_SCEPTER)
-			{
-				memcpy(calcColor, colorTable[CT_AMMO_DISRUPTOR], sizeof(vec4_t));
-			}
-			else
-			{
-				memcpy(calcColor, colorTable[CT_AMMO_DEMP2], sizeof(vec4_t));//colorTable[CT_WHITE]
-			}
+			memcpy(calcColor, colorTable[CT_WHITE], sizeof(vec4_t));
 
 			percent = 0.75f + (sin( cg.time * 0.005f )*((extra/actualEnt->gent->client->ps.forcePowerMax)*0.25f));
 			
@@ -448,14 +529,7 @@ static void CG_DrawForcePower(const centity_t *cent,const int xPos,const int yPo
 			}
 			else
 			{
-				if ( actualEnt->currentState.weapon == WP_SCEPTER )
-				{
-					memcpy(calcColor,  colorTable[CT_AMMO_DISRUPTOR], sizeof(vec4_t));
-				}
-				else
-				{
-					memcpy(calcColor, colorTable[CT_AMMO_DEMP2], sizeof(vec4_t));//colorTable[CT_WHITE]
-				}
+				memcpy(calcColor, colorTable[CT_WHITE], sizeof(vec4_t));
 			}
 
 			percent = value / inc;
@@ -469,14 +543,7 @@ static void CG_DrawForcePower(const centity_t *cent,const int xPos,const int yPo
 			}
 			else
 			{
-				if ( actualEnt->currentState.weapon == WP_SCEPTER )
-				{
-					memcpy(calcColor,  colorTable[CT_AMMO_DISRUPTOR], sizeof(vec4_t));
-				}
-				else
-				{
-					memcpy(calcColor, colorTable[CT_AMMO_DEMP2], sizeof(vec4_t));//colorTable[CT_WHITE]
-				}
+				memcpy(calcColor, colorTable[CT_WHITE], sizeof(vec4_t));
 			}
 		}
 
@@ -497,14 +564,7 @@ static void CG_DrawForcePower(const centity_t *cent,const int xPos,const int yPo
 	}
 	else
 	{
-		if ( actualEnt->currentState.weapon == WP_SCEPTER )
-		{
-			cgi_R_SetColor( colorTable[CT_AMMO_DISRUPTOR] );
-		}
-		else
-		{
-			cgi_R_SetColor( colorTable[CT_AMMO_DEMP2] );//otherHUDBits[OHB_FORCEAMOUNT].color
-		}
+		cgi_R_SetColor( otherHUDBits[OHB_FORCEAMOUNT].color );
 	}
 
 	// Print force numeric amount
@@ -4700,6 +4760,11 @@ static void CG_Draw2D( void )
 	if ( player->client->ps.cloakFuel < 100 )
 	{ //draw it as long as it isn't full
 		CG_DrawCloakFuel();
+	}
+
+	if ( player->client->poisonDamage > 0 )
+	{
+		CG_DrawPoisonBar();
 	}
 
 	if ( player->client->ps.hackingTime )
