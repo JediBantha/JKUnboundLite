@@ -12138,6 +12138,7 @@ void ForceLightningDamage( gentity_t *self, gentity_t *traceEnt, vec3_t dir, flo
 					{
 						dmg = 0;
 					}
+
 					if ( (traceEnt->client->ps.forcePowersActive&(1<<FP_ABSORB))
 						&& traceEnt->client->ps.forcePowerLevel[FP_ABSORB] > FORCE_LEVEL_2 )
 					{//no parry, just absorb
@@ -12146,11 +12147,14 @@ void ForceLightningDamage( gentity_t *self, gentity_t *traceEnt, vec3_t dir, flo
 					{
 						//make them do a parry
 						traceEnt->client->ps.saberBlocked = BLOCKED_UPPER_LEFT;
+						
 						int parryReCalcTime = Jedi_ReCalcParryTime( traceEnt, EVASION_PARRY );
+						
 						if ( traceEnt->client->ps.forcePowerDebounce[FP_SABER_DEFENSE] < level.time + parryReCalcTime )
 						{
 							traceEnt->client->ps.forcePowerDebounce[FP_SABER_DEFENSE] = level.time + parryReCalcTime;
 						}
+						
 						traceEnt->client->ps.weaponTime = Q_irand( 100, 300 );//hold this move - can't attack! - FIXME: unless dual sabers?
 					}
 				}
@@ -12213,7 +12217,7 @@ void ForceLightningDamage( gentity_t *self, gentity_t *traceEnt, vec3_t dir, flo
 			if ( dmg )
 			{
 				G_Damage( traceEnt, self, self, dir, impactPoint, 
-					dmg, NULL, MOD_FORCE_LIGHTNING );
+					dmg, DAMAGE_NO_KNOCKBACK, MOD_FORCE_LIGHTNING );
 			}
 
 			if ( traceEnt->client )
