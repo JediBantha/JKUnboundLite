@@ -6303,21 +6303,29 @@ void G_Damage( gentity_t *targ, gentity_t *inflictor, gentity_t *attacker, const
 		{
 			if ( g_spskill->integer > 0 )
 			{
-				int	poisonChance = (4 - (g_spskill->integer - 1));
+				int	poisonChance = (6 - g_spskill->integer);
 
 				if ( poisonChance < 1 )
 				{
 					poisonChance = 1;
 				}
 
-				if ( Q_irand( 0, poisonChance ) )
+				if ( !Q_irand( 0, poisonChance ) )
 				{
-					targ->client->poisonDamage = (6 + (3 * G_DifficultyLimit()));
+					targ->client->poisonDamage += (6 + (3 * G_DifficultyLimit()));
+
+					if ( targ->client->poisonDamage > 100 )
+					{
+						targ->client->poisonDamage = 100;
+					}
+
 					targ->client->poisonTime = level.time + 1000;
 
+					/*
 					gentity_t *tent = G_TempEntity( targ->currentOrigin, EV_DRUGGED );
 				
 					tent->owner = targ;
+					*/
 				}
 			}
 		}

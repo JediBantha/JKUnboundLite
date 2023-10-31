@@ -114,73 +114,86 @@ qboolean NPC_IsCultist( gentity_t *ent )
 		return qfalse;
 	}
 
-	if ( Q_stricmp( "cultist", ent->NPC_type ) )
+	if ( !Q_stricmp( "cultist", ent->NPC_type ) )
 	{
-		return qfalse;
+		return qtrue;
 	}
 
-	if ( Q_stricmp( "cultistcommando", ent->NPC_type ) )
+	if ( !Q_stricmp( "cultistcommando", ent->NPC_type ) )
 	{
-		return qfalse;
+		return qtrue;
 	}
 
-	if ( Q_stricmp( "cultist_destroyer", ent->NPC_type ) || 
-		Q_stricmp( "cultist_drain", ent->NPC_type ) || 
-		Q_stricmp( "cultist_grip", ent->NPC_type ) || 
-		Q_stricmp( "cultist_lightning", ent->NPC_type ) )
+	if ( !Q_stricmp( "cultist_destroyer", ent->NPC_type ) || 
+		!Q_stricmp( "cultist_drain", ent->NPC_type ) || 
+		!Q_stricmp( "cultist_grip", ent->NPC_type ) || 
+		!Q_stricmp( "cultist_lightning", ent->NPC_type ) || 
+		!Q_stricmp( "cultist_destruction", ent->NPC_type ) )
 	{
-		return qfalse;
+		return qtrue;
 	}
 
-	if ( Q_stricmp( "cultist_saber", ent->NPC_type ) || 
-		Q_stricmp( "cultist_saber2", ent->NPC_type ) )
+	if ( !Q_stricmp( "cultist_saber", ent->NPC_type ) || 
+		!Q_stricmp( "cultist_saber2", ent->NPC_type ) )
 	{
-		return qfalse;
+		return qtrue;
 	}
 
-	if ( Q_stricmp( "cultist_saber_throw", ent->NPC_type ) || 
-		Q_stricmp( "cultist_saber_throw2", ent->NPC_type ) )
+	if ( !Q_stricmp( "cultist_saber_throw", ent->NPC_type ) || 
+		!Q_stricmp( "cultist_saber_throw2", ent->NPC_type ) )
 	{
-		return qfalse;
+		return qtrue;
 	}
 
-	if ( Q_stricmp( "cultist_saber_med", ent->NPC_type ) || 
-		Q_stricmp( "cultist_saber_med2", ent->NPC_type ) )
+	if ( !Q_stricmp( "cultist_saber_med", ent->NPC_type ) || 
+		!Q_stricmp( "cultist_saber_med2", ent->NPC_type ) )
 	{
-		return qfalse;
+		return qtrue;
 	}
 
-	if ( Q_stricmp( "cultist_saber_med_throw", ent->NPC_type ) || 
-		Q_stricmp( "cultist_saber_med_throw2", ent->NPC_type ) )
+	if ( !Q_stricmp( "cultist_saber_med_throw", ent->NPC_type ) || 
+		!Q_stricmp( "cultist_saber_med_throw2", ent->NPC_type ) )
 	{
-		return qfalse;
+		return qtrue;
 	}
 
-	if ( Q_stricmp( "cultist_saber_strong", ent->NPC_type ) || 
-		Q_stricmp( "cultist_saber_strong2", ent->NPC_type ) )
+	if ( !Q_stricmp( "cultist_saber_strong", ent->NPC_type ) || 
+		!Q_stricmp( "cultist_saber_strong2", ent->NPC_type ) )
 	{
-		return qfalse;
+		return qtrue;
 	}
 
-	if ( Q_stricmp( "cultist_saber_strong_throw", ent->NPC_type ) || 
-		Q_stricmp( "cultist_saber_strong_throw2", ent->NPC_type ) )
+	if ( !Q_stricmp( "cultist_saber_strong_throw", ent->NPC_type ) || 
+		!Q_stricmp( "cultist_saber_strong_throw2", ent->NPC_type ) )
 	{
-		return qfalse;
+		return qtrue;
 	}
 
-	if ( Q_stricmp( "cultist_saber_all", ent->NPC_type ) || 
-		Q_stricmp( "cultist_saber_all2", ent->NPC_type ) )
+	if ( !Q_stricmp( "cultist_saber_all", ent->NPC_type ) || 
+		!Q_stricmp( "cultist_saber_all2", ent->NPC_type ) )
 	{
-		return qfalse;
+		return qtrue;
 	}
 
-	if ( Q_stricmp( "cultist_saber_all_throw", ent->NPC_type ) || 
-		Q_stricmp( "cultist_saber_all_throw2", ent->NPC_type ) )
+	if ( !Q_stricmp( "cultist_saber_all_throw", ent->NPC_type ) || 
+		!Q_stricmp( "cultist_saber_all_throw2", ent->NPC_type ) )
 	{
-		return qfalse;
+		return qtrue;
 	}
 
-	return qtrue;
+	if ( !Q_stricmp( "cultist_adept", ent->NPC_type ) || 
+		!Q_stricmp( "cultist_adept_melee", ent->NPC_type ) )
+	{
+		return qtrue;
+	}
+
+	if ( !Q_stricmp( "cultist_boss", ent->NPC_type ) || 
+		!Q_stricmp( "cultist_boss_melee", ent->NPC_type ) )
+	{
+		return qtrue;
+	}
+
+	return qfalse;
 }
 
 void NPC_CultistDestroyer_Precache( void )
@@ -7827,10 +7840,24 @@ qboolean Jedi_InSpecialMove( void )
 
 				if ( helpingRosh )
 				{
-					WP_ForcePowerStop( NPC, FP_LIGHTNING );
-					WP_ForcePowerStop( NPC, FP_DRAIN );
-					WP_ForcePowerStop( NPC, FP_GRIP );
+					for ( int forcePower = FP_FIRST; forcePower < NUM_FORCE_POWERS; forcePower++ )
+					{
+						switch ( forcePower )
+						{
+						case FP_SPEED:
+						case FP_GRIP:
+						case FP_LIGHTNING:
+						case FP_RAGE:
+						case FP_PROTECT:
+						case FP_ABSORB:
+						case FP_DRAIN:
+							WP_ForcePowerStop( NPC, (forcePowers_t)forcePower );
+							break;
+						}
+					}
+
 					NPC_FaceEntity( NPC->client->leader, qtrue );
+					
 					return qtrue;
 				}
 				else if ( NPC->enemy && DistanceSquared( NPC->enemy->currentOrigin, NPC->currentOrigin ) < Twins_DangerDist() )

@@ -368,12 +368,20 @@ void Interrogator_Melee( qboolean visible, qboolean advance )
 			TIMER_Set( NPC, "attackDelay", Q_irand( 500, 3000 ) );
 			G_Damage( NPC->enemy, NPC, NPC, 0, 0, (2 + G_DifficultyLimit()), DAMAGE_NO_KNOCKBACK, MOD_MELEE );
 
-			NPC->enemy->client->poisonDamage = 18;
+			NPC->enemy->client->poisonDamage += (6 + (3 * G_DifficultyLimit()));
+
+			if ( NPC->enemy->client->poisonDamage > 100 )
+			{
+				NPC->enemy->client->poisonDamage = 100;
+			}
+
 			NPC->enemy->client->poisonTime = level.time + 1000;
 
+			/*
 			// Drug our enemy up and do the wonky vision thing
 			gentity_t *tent = G_TempEntity( NPC->enemy->currentOrigin, EV_DRUGGED );
 			tent->owner = NPC->enemy;
+			*/
 
 			G_Sound( NPC, G_SoundIndex( "sound/chars/interrogator/misc/torture_droid_inject.mp3" ));
 		}
