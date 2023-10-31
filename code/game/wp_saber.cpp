@@ -10835,6 +10835,11 @@ void ForceHeal( gentity_t *self )
 			}
 		}
 
+		if ( self->client->poisonDamage > 0 )
+		{
+			self->client->poisonDamage = 0;
+		}
+
 		WP_ForcePowerStart( self, FP_HEAL, max );
 		WP_ForcePowerStop( self, FP_HEAL );
 		G_SoundOnEnt( self, CHAN_VOICE, va( "sound/weapons/force/heal%d.mp3", Q_irand( 1, 4 ) ) );
@@ -12022,18 +12027,13 @@ void ForceLightningDamage( gentity_t *self, gentity_t *traceEnt, vec3_t dir, flo
 			}
 
 			int	dmg = Q_irand( min, max );
-			int	dflags = NULL;
-
-			if ( lightningLevel < 3 )
-			{
-				dflags |= DAMAGE_NO_KNOCKBACK;
-			}
 
 			//FIXME: check for client using FP_ABSORB
 			if ( lightningLevel > FORCE_LEVEL_2 )
 			{//more damage if closer and more in front
-				if ( self->client->NPC_class == CLASS_REBORN
-					&& self->client->ps.weapon == WP_NONE )
+				if ( NPC_IsJediClass( self )	/*self->client->NPC_class == CLASS_REBORN*/
+					&& self->client->ps.weapon != WP_SABER
+					&& self->s.number != 0 )
 				{//Cultist: looks fancy, but does less damage
 				}
 				else
@@ -12213,7 +12213,7 @@ void ForceLightningDamage( gentity_t *self, gentity_t *traceEnt, vec3_t dir, flo
 			if ( dmg )
 			{
 				G_Damage( traceEnt, self, self, dir, impactPoint, 
-					dmg, dflags, MOD_FORCE_LIGHTNING );
+					dmg, NULL, MOD_FORCE_LIGHTNING );
 			}
 
 			if ( traceEnt->client )
