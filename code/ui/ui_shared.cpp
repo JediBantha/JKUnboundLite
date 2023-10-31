@@ -4366,6 +4366,7 @@ qboolean ItemParse_cvarTest( itemDef_t *item)
 	{
 		return qfalse;
 	}
+
 	return qtrue;
 }
 
@@ -4379,6 +4380,7 @@ qboolean ItemParse_cvar( itemDef_t *item)
 	editFieldDef_t *editPtr;
 
 	Item_ValidateTypeData(item);
+
 	if (!PC_ParseStringMem(&item->cvar))
 	{
 		return qfalse;
@@ -4402,6 +4404,7 @@ qboolean ItemParse_cvar( itemDef_t *item)
 				break;
 		}
 	}
+
 	return qtrue;
 }
 
@@ -4416,6 +4419,7 @@ qboolean ItemParse_maxChars( itemDef_t *item)
 	int maxChars;
 
 	Item_ValidateTypeData(item);
+
 	if (!item->typeData)
 	{
 		return qfalse;
@@ -4425,8 +4429,10 @@ qboolean ItemParse_maxChars( itemDef_t *item)
 	{
 		return qfalse;
 	}
+
 	editPtr = (editFieldDef_t*)item->typeData;
 	editPtr->maxChars = maxChars;
+
 	return qtrue;
 }
 
@@ -4441,6 +4447,7 @@ qboolean ItemParse_maxPaintChars( itemDef_t *item)
 	int maxChars;
 
 	Item_ValidateTypeData(item);
+	
 	if (!item->typeData)
 	{
 		return qfalse;
@@ -4450,8 +4457,10 @@ qboolean ItemParse_maxPaintChars( itemDef_t *item)
 	{
 		return qfalse;
 	}
+
 	editPtr = (editFieldDef_t*)item->typeData;
 	editPtr->maxPaintChars = maxChars;
+
 	return qtrue;
 }
 
@@ -4462,6 +4471,7 @@ qboolean ItemParse_lineHeight( itemDef_t *item)
 	int				height;
 
 	Item_ValidateTypeData(item);
+	
 	if (!item->typeData)
 	{
 		return qfalse;
@@ -4488,11 +4498,14 @@ qboolean ItemParse_cvarFloat( itemDef_t *item)
 	editFieldDef_t *editPtr;
 
 	Item_ValidateTypeData(item);
+	
 	if (!item->typeData)
 	{
 		return qfalse;
 	}
+	
 	editPtr = (editFieldDef_t*)item->typeData;
+	
 	if (PC_ParseStringMem((const char **) &item->cvar) &&
 		!PC_ParseFloat(&editPtr->defVal) &&
 		!PC_ParseFloat(&editPtr->minVal) &&
@@ -4502,6 +4515,7 @@ qboolean ItemParse_cvarFloat( itemDef_t *item)
 		{//hehe, hook up the correct max value here.
 			editPtr->maxVal=cls.glconfig.maxTextureFilterAnisotropy;
 		}
+
 		return qtrue;
 	}
 
@@ -4520,10 +4534,12 @@ qboolean ItemParse_cvarStrList( itemDef_t *item)
 	int pass;
 
 	Item_ValidateTypeData(item);
+	
 	if (!item->typeData)
 	{
 		return qfalse;
 	}
+
 	multiPtr = (multiDef_t*)item->typeData;
 	multiPtr->count = 0;
 	multiPtr->strDef = qtrue;
@@ -4540,8 +4556,10 @@ qboolean ItemParse_cvarStrList( itemDef_t *item)
 			multiPtr->cvarList[multiPtr->count] = String_Alloc(Q_strupr(va("@MENUS_%s",uiInfo.playerSpecies[multiPtr->count].Name )));	//look up translation
 			multiPtr->cvarStr[multiPtr->count] = uiInfo.playerSpecies[multiPtr->count].Name;	//value
 		}
+
 		return qtrue;
 	}
+
 	// languages
 	if (!Q_stricmp(token,"feeder") && item->special == FEEDER_LANGUAGES)
 	{
@@ -4555,14 +4573,17 @@ qboolean ItemParse_cvarStrList( itemDef_t *item)
 				multiPtr->cvarStr[multiPtr->count] = SE_GetLanguageName(multiPtr->count);
 #endif
 		}
+
 		return qtrue;
 	}
+
 	if (*token != '{')
 	{
 		return qfalse;
 	}
 
 	pass = 0;
+
 	while ( 1 )
 	{
 		if (!PC_ParseStringMem(&token))
@@ -4570,6 +4591,7 @@ qboolean ItemParse_cvarStrList( itemDef_t *item)
 			PC_ParseWarning("end of file inside menu item\n");
 			return qfalse;
 		}
+
 		if (*token == '}')
 		{
 			return qtrue;
@@ -4590,6 +4612,7 @@ qboolean ItemParse_cvarStrList( itemDef_t *item)
 			multiPtr->cvarStr[multiPtr->count] = token;
 			pass = 0;
 			multiPtr->count++;
+
 			if (multiPtr->count >= MAX_MULTI_CVARS)
 			{
 				return qfalse;
@@ -4611,10 +4634,12 @@ qboolean ItemParse_cvarFloatList( itemDef_t *item)
 	multiDef_t	*multiPtr;
 
 	Item_ValidateTypeData(item);
+
 	if (!item->typeData)
 	{
 		return qfalse;
 	}
+
 	multiPtr = (multiDef_t*)item->typeData;
 	multiPtr->count = 0;
 	multiPtr->strDef = qfalse;
@@ -4647,12 +4672,14 @@ qboolean ItemParse_cvarFloatList( itemDef_t *item)
 		}
 
 		multiPtr->cvarList[multiPtr->count] = token;	//a StringAlloc ptr
+		
 		if (PC_ParseFloat(&multiPtr->cvarValue[multiPtr->count]))
 		{
 			return qfalse;
 		}
 
 		multiPtr->count++;
+		
 		if (multiPtr->count >= MAX_MULTI_CVARS)
 		{
 			return qfalse;
@@ -4793,10 +4820,17 @@ void Item_ValidateTypeData(itemDef_t *item)
 		item->typeData = UI_Alloc(sizeof(listBoxDef_t));
 		memset(item->typeData, 0, sizeof(listBoxDef_t));
 	}
-	else if (item->type == ITEM_TYPE_EDITFIELD || item->type == ITEM_TYPE_NUMERICFIELD || item->type == ITEM_TYPE_YESNO || item->type == ITEM_TYPE_BIND || item->type == ITEM_TYPE_SLIDER || item->type == ITEM_TYPE_TEXT)
+	else if ( item->type == ITEM_TYPE_EDITFIELD || 
+		item->type == ITEM_TYPE_NUMERICFIELD || 
+		item->type == ITEM_TYPE_YESNO || 
+		item->type == ITEM_TYPE_BIND || 
+		item->type == ITEM_TYPE_SLIDER || 
+		item->type == ITEM_TYPE_TEXT )
 	{
 		item->typeData = UI_Alloc(sizeof(editFieldDef_t));
+
 		memset(item->typeData, 0, sizeof(editFieldDef_t));
+
 		if (item->type == ITEM_TYPE_EDITFIELD)
 		{
 			if (!((editFieldDef_t *) item->typeData)->maxPaintChars)
@@ -4812,6 +4846,7 @@ void Item_ValidateTypeData(itemDef_t *item)
 	else if (item->type == ITEM_TYPE_MODEL)
 	{
 		item->typeData = UI_Alloc(sizeof(modelDef_t));
+
 		memset(item->typeData, 0, sizeof(modelDef_t));
 	}
 	else if (item->type == ITEM_TYPE_TEXTSCROLL )
@@ -5572,6 +5607,7 @@ static void Controls_GetKeyAssignment( const char *command, int *twokeys )
 	char	b[256];
 
 	twokeys[0] = twokeys[1] = -1;
+
 	count = 0;
 
 	for ( j=0; j<MAX_KEYS; j++ ) 
@@ -5637,6 +5673,7 @@ void Item_SetScreenCoords(itemDef_t *item, float x, float y)
 		case ITEM_TYPE_TEXTSCROLL:
 		{
 			textScrollDef_t *scrollPtr = (textScrollDef_t*)item->typeData;
+			
 			if ( scrollPtr )
 			{
 				scrollPtr->startPos = 0;
@@ -5654,6 +5691,7 @@ void Item_SetScreenCoords(itemDef_t *item, float x, float y)
 static void Menu_FreeGhoulItems(menuDef_t *menu)
 {
 	int i,j;
+
 	for (i = 0; i < menu->itemCount; i++)
 	{
 		for (j=0; j < menu->items[i]->ghoul2.size(); j++)
@@ -5663,6 +5701,7 @@ static void Menu_FreeGhoulItems(menuDef_t *menu)
 				DC->g2_RemoveGhoul2Model( menu->items[i]->ghoul2, j );
 			}
 		}
+
 		(menu->items[i]->ghoul2).clear();	//clear is the public Free so i can actually remove this slot
 	}
 }
@@ -5701,6 +5740,7 @@ void Menu_UpdatePosition(menuDef_t *menu)
 
   x = menu->window.rect.x;
   y = menu->window.rect.y;
+
   if (menu->window.border != 0)
   {
     x += menu->window.borderSize;
@@ -5732,6 +5772,7 @@ void Menu_PostParse(menuDef_t *menu)
 		menu->window.rect.w = 640;
 		menu->window.rect.h = 480;
 	}
+
 	Menu_UpdatePosition(menu);
 }
 
@@ -5743,6 +5784,7 @@ Menu_Init
 void Menu_Init(menuDef_t *menu)
 {
 	memset(menu, 0, sizeof(menuDef_t));
+
 	menu->cursorItem = -1;
 
 	UI_Cursor_Show(qtrue);
@@ -5787,6 +5829,7 @@ qboolean Menu_Parse(char *inbuffer, menuDef_t *menu)
 	{
 
 		token2 = PC_ParseExt();
+
 		if (!token2)
 		{
 			PC_ParseWarning("End of file inside menu.");
@@ -5833,6 +5876,7 @@ void Menu_New(char *buffer)
 	if (menuCount < MAX_MENUS)
 	{
 		Menu_Init(menu);
+
 		if (Menu_Parse(buffer, menu))
 		{
 			Menu_PostParse(menu);
@@ -5879,6 +5923,7 @@ int PC_StartParseSession(const char *fileName,char **buffer)
 		COM_BeginParseSession();
 
 		Q_strncpyz(parseData[parseDataCount].fileName, fileName, sizeof (parseData[0].fileName));
+
 		parseData[parseDataCount].bufferStart = *buffer;
 		parseData[parseDataCount].bufferCurrent = *buffer;
 	}
@@ -5894,6 +5939,7 @@ PC_EndParseSession
 void PC_EndParseSession(char *buffer)
 {
 	COM_EndParseSession();
+
 	ui.FS_FreeFile( buffer );	//let go of the buffer
 }
 
@@ -5904,7 +5950,12 @@ PC_ParseWarning
 */
 void PC_ParseWarning(const char *message)
 {
-	ui.Printf(S_COLOR_YELLOW "WARNING: %s Line #%d of File '%s'\n", message,parseData[parseDataCount].com_lines,parseData[parseDataCount].fileName);
+	ui.Printf(
+		S_COLOR_YELLOW "WARNING: %s Line #%d of File '%s'\n", 
+		message,
+		parseData[parseDataCount].com_lines,
+		parseData[parseDataCount].fileName
+	);
 }
 
 char *PC_ParseExt(void)
@@ -5974,6 +6025,7 @@ Menu_PaintAll
 void Menu_PaintAll(void)
 {
 	int i;
+
 	if (captureFunc)
 	{
 		captureFunc(captureData);
@@ -5987,8 +6039,28 @@ void Menu_PaintAll(void)
 	if (uis.debugMode)
 	{
 		vec4_t v = {1, 1, 1, 1};
-		DC->drawText(5, 25, .75, v, va("(%d,%d)",DC->cursorx,DC->cursory), 0, 0, DC->Assets.qhMediumFont);
-		DC->drawText(5, 10, .75, v, va("fps: %f", DC->FPS), 0, 0, DC->Assets.qhMediumFont);
+
+		DC->drawText(
+			5, 
+			25, 
+			.75, 
+			v, 
+			va("(%d,%d)",DC->cursorx,DC->cursory), 
+			0, 
+			0, 
+			DC->Assets.qhMediumFont
+		);
+
+		DC->drawText(
+			5, 
+			10, 
+			.75, 
+			v, 
+			va("fps: %f", DC->FPS), 
+			0, 
+			0, 
+			DC->Assets.qhMediumFont
+		);
 	}
 }
 
@@ -6011,9 +6083,12 @@ void Menu_Paint(menuDef_t *menu, qboolean forcePaint)
 		if (DC->realTime > menu->window.delayTime)
 		{ // Time has elapsed, resume running whatever script we saved
 			itemDef_t item;
+
 			item.parent = menu;
 			item.window.flags = 0;	//clear before calling RunScript
+			
 			menu->window.flags &= ~WINDOW_SCRIPTWAITING;
+			
 			Item_RunScript(&item, menu->window.delayedScript);
 
 			// Could have hit another delay. Need to hoist from fake item
@@ -6046,6 +6121,7 @@ void Menu_Paint(menuDef_t *menu, qboolean forcePaint)
 	{
 
 		vec4_t	color;
+
 		color[0] = menu->window.backColor[0];
 		color[1] = menu->window.backColor[1];
 		color[2] = menu->window.backColor[2];
@@ -6058,7 +6134,13 @@ void Menu_Paint(menuDef_t *menu, qboolean forcePaint)
 			menu->window.background = uis.whiteShader;
 		}
 
-		DC->drawHandlePic( 0, 0, SCREEN_WIDTH, SCREEN_HEIGHT, menu->window.background );
+		DC->drawHandlePic( 
+			0, 
+			0, 
+			SCREEN_WIDTH, 
+			SCREEN_HEIGHT, 
+			menu->window.background 
+		);
 	}
 	else if (menu->window.background)
 	{
@@ -6071,6 +6153,7 @@ void Menu_Paint(menuDef_t *menu, qboolean forcePaint)
 
 	// Loop through all items for the menu and paint them
 	int iSlotsVisible = 0;
+
 	for (i = 0; i < menu->itemCount; i++)
 	{
 		if (!menu->items[i]->appearanceSlot)
@@ -6083,13 +6166,16 @@ void Menu_Paint(menuDef_t *menu, qboolean forcePaint)
 			{
 				iSlotsVisible++;	//It would paint
 			}
+
 			if (menu->items[i]->appearanceSlot<=menu->appearanceCnt)
 			{
 				Item_Paint(menu->items[i], qtrue);
 			}
 		}
 	}
-	if (iSlotsVisible && menu->appearanceTime < DC->realTime && menu->appearanceCnt < menu->itemCount)	// Time to show another item
+	if ( iSlotsVisible 
+		&& menu->appearanceTime < DC->realTime 
+		&& menu->appearanceCnt < menu->itemCount )	// Time to show another item
 	{
 		menu->appearanceTime = DC->realTime + menu->appearanceIncrement;
 		menu->appearanceCnt++;
@@ -6099,9 +6185,18 @@ void Menu_Paint(menuDef_t *menu, qboolean forcePaint)
 	if (uis.debugMode)
 	{
 		vec4_t color;
+
 		color[0] = color[2] = color[3] = 1;
 		color[1] = 0;
-		DC->drawRect(menu->window.rect.x, menu->window.rect.y, menu->window.rect.w, menu->window.rect.h, 1, color);
+
+		DC->drawRect(
+			menu->window.rect.x, 
+			menu->window.rect.y, 
+			menu->window.rect.w, 
+			menu->window.rect.h, 
+			1, 
+			color
+		);
 	}
 }
 
@@ -6112,16 +6207,24 @@ Item_EnableShowViaCvar
 */
 qboolean Item_EnableShowViaCvar(itemDef_t *item, int flag)
 {
-	if (item && item->enableCvar && *item->enableCvar && item->cvarTest && *item->cvarTest)
+	if ( item 
+		&& item->enableCvar 
+		&& *item->enableCvar 
+		&& item->cvarTest 
+		&& *item->cvarTest )
 	{
 		char script[1024];
 		const char *p;
 		char buff[1024];
+
 		if (item->cvarFlags & CVAR_SUBSTRING)
 		{
 			const char *val;
+
 			p = item->enableCvar;
+
 			COM_BeginParseSession();
+
 			if (!String_Parse(&p, &val))
 			{//strip the quotes off
 				COM_EndParseSession();
@@ -6130,19 +6233,26 @@ qboolean Item_EnableShowViaCvar(itemDef_t *item, int flag)
 
 			COM_EndParseSession();
 			Q_strncpyz(buff, val, sizeof(buff));
+
 			DC->getCVarString(item->cvarTest, script, sizeof(script));
+
 			p = script;
 		}
 		else
 		{
 			DC->getCVarString(item->cvarTest, buff, sizeof(buff));
+
 			Q_strncpyz(script, item->enableCvar, sizeof(script));
+
 			p = script;
 		}
+
 		COM_BeginParseSession();
+
 		while (1)
 		{
 			const char *val;
+
 			// expect value then ; or NULL, NULL ends list
 			if (!String_Parse(&p, &val))
 			{
@@ -6174,9 +6284,12 @@ qboolean Item_EnableShowViaCvar(itemDef_t *item, int flag)
 				}
 			}
 		}
+
 		COM_EndParseSession();
+		
 		return (item->cvarFlags & flag) ? qfalse : qtrue;
 	}
+
 	return qtrue;
 }
 
@@ -6188,6 +6301,7 @@ bool HasStringLanguageChanged ( const itemDef_t *item )
 	}
 
 	int modificationCount;
+
 #ifdef JK2_MODE
 	modificationCount = sp_language->modificationCount;
 #else
@@ -6215,22 +6329,29 @@ void Item_SetTextExtents(itemDef_t *item, int *width, int *height, const char *t
 	*height = item->textRect.h;
 
 	// keeps us from computing the widths and heights more than once
-	if (*width == 0 ||
-		(item->type == ITEM_TYPE_OWNERDRAW && item->textalignment == ITEM_ALIGN_CENTER) ||
-		HasStringLanguageChanged (item))
+	if ( *width == 0 ||
+		(item->type == ITEM_TYPE_OWNERDRAW 
+			&& item->textalignment == ITEM_ALIGN_CENTER) ||
+		HasStringLanguageChanged(item) )
 	{
 		int originalWidth;
 
 		originalWidth = DC->textWidth(textPtr, item->textscale, item->font);
 
-		if (item->type == ITEM_TYPE_OWNERDRAW && (item->textalignment == ITEM_ALIGN_CENTER || item->textalignment == ITEM_ALIGN_RIGHT))
+		if ( item->type == ITEM_TYPE_OWNERDRAW 
+			&& (item->textalignment == ITEM_ALIGN_CENTER || 
+				item->textalignment == ITEM_ALIGN_RIGHT) )
 		{
 			originalWidth += DC->ownerDrawWidth(item->window.ownerDraw, item->textscale);
 		}
-		else if (item->type == ITEM_TYPE_EDITFIELD && item->textalignment == ITEM_ALIGN_CENTER && item->cvar)
+		else if (item->type == ITEM_TYPE_EDITFIELD 
+			&& item->textalignment == ITEM_ALIGN_CENTER 
+			&& item->cvar)
 		{
 			char buff[256];
+
 			DC->getCVarString(item->cvar, buff, 256);
+
 			originalWidth += DC->textWidth(buff, item->textscale, item->font);
 		}
 
@@ -6241,6 +6362,7 @@ void Item_SetTextExtents(itemDef_t *item, int *width, int *height, const char *t
 		item->textRect.h = *height;
 		item->textRect.x = item->textalignx;
 		item->textRect.y = item->textaligny;
+		
 		if (item->textalignment == ITEM_ALIGN_RIGHT)
 		{
 			item->textRect.x = item->textalignx - originalWidth;
@@ -6251,6 +6373,7 @@ void Item_SetTextExtents(itemDef_t *item, int *width, int *height, const char *t
 		}
 
 		ToWindowCoords(&item->textRect.x, &item->textRect.y, &item->window);
+
 #ifdef JK2_MODE
 		if(item->text && item->text[0]=='@')
 			item->asset = sp_language->modificationCount;
@@ -6272,9 +6395,19 @@ void Item_TextColor(itemDef_t *item, vec4_t *newColor)
 	const vec4_t greyColor = { .5, .5, .5, 1};
 	menuDef_t *parent = (menuDef_t*)item->parent;
 
-	Fade(&item->window.flags, &item->window.foreColor[3], parent->fadeClamp, &item->window.nextTime, parent->fadeCycle, qtrue, parent->fadeAmount);
+	Fade(
+		&item->window.flags, 
+		&item->window.foreColor[3], 
+		parent->fadeClamp, 
+		&item->window.nextTime, 
+		parent->fadeCycle, 
+		qtrue, 
+		parent->fadeAmount
+	);
 
-	if ( !(item->type == ITEM_TYPE_TEXT && item->window.flags & WINDOW_AUTOWRAPPED) && item->window.flags & WINDOW_HASFOCUS)
+	if ( !(item->type == ITEM_TYPE_TEXT 
+		&& item->window.flags & WINDOW_AUTOWRAPPED) 
+		&& item->window.flags & WINDOW_HASFOCUS )
 	{
 		lowLight[0] = 0.8 * parent->focusColor[0];
 		lowLight[1] = 0.8 * parent->focusColor[1];
@@ -6365,15 +6498,29 @@ void Item_Text_Wrapped_Paint(itemDef_t *item)
 	y = item->textRect.y;
 	start = textPtr;
 	p = strchr(textPtr, '\r');
+	
 	while (p && *p)
 	{
 		strncpy(buff, start, p-start+1);
+		
 		buff[p-start] = '\0';
-		DC->drawText(x, y, item->textscale, color, buff, 0, item->textStyle, item->font);
+		
+		DC->drawText(
+			x, 
+			y, 
+			item->textscale, 
+			color, 
+			buff, 
+			0, 
+			item->textStyle, 
+			item->font
+		);
+		
 		y += height + 5;
 		start += p - start + 1;
 		p = strchr(p+1, '\r');
 	}
+	
 	DC->drawText(x, y, item->textscale, color, start, 0, item->textStyle, item->font);
 }
 
@@ -6439,18 +6586,39 @@ void Item_Text_Paint(itemDef_t *item)
 	}
 
 	Item_TextColor(item, &color);
-	DC->drawText(item->textRect.x, item->textRect.y, item->textscale, color, textPtr, 0, item->textStyle, item->font);
+	
+	DC->drawText(
+		item->textRect.x, 
+		item->textRect.y, 
+		item->textscale, 
+		color, 
+		textPtr, 
+		0, 
+		item->textStyle, 
+		item->font
+	);
 
 	if (item->text2)	// Is there a second line of text?
 	{
 		textPtr = item->text2;
+		
 		if (*textPtr == '@')	// string reference
 		{
 			textPtr = SE_GetString( &textPtr[1] );
 		}
 
 		Item_TextColor(item, &color);
-		DC->drawText(item->textRect.x + item->text2alignx, item->textRect.y + item->text2aligny, item->textscale, color, textPtr, 0, item->textStyle, item->font);
+		
+		DC->drawText(
+			item->textRect.x + item->text2alignx, 
+			item->textRect.y + item->text2aligny, 
+			item->textscale, 
+			color, 
+			textPtr, 
+			0, 
+			item->textStyle, 
+			item->font
+		);
 	}
 }
 
@@ -6513,7 +6681,13 @@ void Item_TextField_Paint(itemDef_t *item)
 		lowLight[1] = 0.8 * parent->focusColor[1];
 		lowLight[2] = 0.8 * parent->focusColor[2];
 		lowLight[3] = 0.8 * parent->focusColor[3];
-		LerpColor(parent->focusColor,lowLight,newColor,0.5+0.5*sin((float)(DC->realTime / PULSE_DIVISOR)));
+		
+		LerpColor(
+			parent->focusColor,
+			lowLight,
+			newColor,
+			0.5+0.5*sin((float)(DC->realTime / PULSE_DIVISOR))
+		);
 	}
 	else
 	{
@@ -6521,10 +6695,23 @@ void Item_TextField_Paint(itemDef_t *item)
 	}
 
 	offset = 8;//(item->text && *item->text) ? 8 : 0;
+	
 	if (item->window.flags & WINDOW_HASFOCUS && g_editingField)
 	{
 		char cursor = DC->getOverstrikeMode() ? '_' : '|';
-		DC->drawTextWithCursor(item->textRect.x + item->textRect.w + offset, item->textRect.y, item->textscale, newColor, buff + editPtr->paintOffset, item->cursorPos - editPtr->paintOffset , cursor, /*editPtr->maxPaintChars*/ item->window.rect.w, item->textStyle, item->font);
+		
+		DC->drawTextWithCursor(
+			item->textRect.x + item->textRect.w + offset, 
+			item->textRect.y, 
+			item->textscale, 
+			newColor, 
+			buff + editPtr->paintOffset, 
+			item->cursorPos - editPtr->paintOffset, 
+			cursor, 
+			/*editPtr->maxPaintChars*/ item->window.rect.w, 
+			item->textStyle, 
+			item->font
+		);
 	}
 	else
 	{
@@ -6537,6 +6724,7 @@ void Item_TextScroll_Paint(itemDef_t *item)
 	char cvartext[1024];
 	float x, y, size, count, thumb;
 	int	  i;
+	
 	textScrollDef_t *scrollPtr = (textScrollDef_t*)item->typeData;
 
 	size = item->window.rect.h - 2;
@@ -6550,6 +6738,7 @@ void Item_TextScroll_Paint(itemDef_t *item)
 	}
 
 	Item_TextScroll_BuildLines ( item );
+	
 	count = scrollPtr->iLineCount;
 
 	// Draw scroll bar if text goes beyond bottom
@@ -6558,21 +6747,40 @@ void Item_TextScroll_Paint(itemDef_t *item)
 		// draw scrollbar to right side of the window
 		x = item->window.rect.x + item->window.rect.w - SCROLLBAR_SIZE - 1;
 		y = item->window.rect.y + 1;
-		DC->drawHandlePic(x, y, SCROLLBAR_SIZE, SCROLLBAR_SIZE, DC->Assets.scrollBarArrowUp);
+		
+		DC->drawHandlePic(
+			x, 
+			y, 
+			SCROLLBAR_SIZE, 
+			SCROLLBAR_SIZE, 
+			DC->Assets.scrollBarArrowUp
+		);
+		
 		y += SCROLLBAR_SIZE - 1;
 
 		scrollPtr->endPos = scrollPtr->startPos;
 		size = item->window.rect.h - (SCROLLBAR_SIZE * 2);
-		DC->drawHandlePic(x, y, SCROLLBAR_SIZE, size+1, DC->Assets.scrollBar);
+		
+		DC->drawHandlePic(
+			x, 
+			y, 
+			SCROLLBAR_SIZE, 
+			size+1, 
+			DC->Assets.scrollBar
+		);
+		
 		y += size - 1;
+		
 		DC->drawHandlePic(x, y, SCROLLBAR_SIZE, SCROLLBAR_SIZE, DC->Assets.scrollBarArrowDown);
 
 		// thumb
 		thumb = Item_TextScroll_ThumbDrawPosition(item);
+		
 		if (thumb > y - SCROLLBAR_SIZE - 1)
 		{
 			thumb = y - SCROLLBAR_SIZE - 1;
 		}
+		
 		DC->drawHandlePic(x, thumb, SCROLLBAR_SIZE, SCROLLBAR_SIZE, DC->Assets.scrollBarThumb);
 	}
 
@@ -6587,14 +6795,25 @@ void Item_TextScroll_Paint(itemDef_t *item)
 		const char *text;
 
 		text = scrollPtr->pLines[i];
+		
 		if (!text)
 		{
 			continue;
 		}
 
-		DC->drawText(x + 4, y, item->textscale, item->window.foreColor, text, 0, item->textStyle, item->font);
+		DC->drawText(
+			x + 4, 
+			y, 
+			item->textscale, 
+			item->window.foreColor, 
+			text, 
+			0, 
+			item->textStyle, 
+			item->font
+		);
 
 		size -= scrollPtr->lineHeight;
+		
 		if (size < scrollPtr->lineHeight)
 		{
 			scrollPtr->drawPadding = scrollPtr->lineHeight - size;
@@ -6635,6 +6854,7 @@ void Item_ListBox_Paint(itemDef_t *item)
 	{//probably changed feeders, so reset
 		item->cursorPos = 0;
 	}
+
 	// default is vertical if horizontal flag is not here
 	if (item->window.flags & WINDOW_HORIZONTAL)
 	{
@@ -6647,19 +6867,51 @@ void Item_ListBox_Paint(itemDef_t *item)
 			{
 				x = item->window.rect.x + 1;
 				y = item->window.rect.y + item->window.rect.h - SCROLLBAR_SIZE - 1;
-				DC->drawHandlePic(x, y, SCROLLBAR_SIZE, SCROLLBAR_SIZE, DC->Assets.scrollBarArrowLeft);
+				
+				DC->drawHandlePic(
+					x, 
+					y, 
+					SCROLLBAR_SIZE, 
+					SCROLLBAR_SIZE, 
+					DC->Assets.scrollBarArrowLeft
+				);
+				
 				x += SCROLLBAR_SIZE - 1;
 				size = item->window.rect.w - (SCROLLBAR_SIZE * 2);
-				DC->drawHandlePic(x, y, size+1, SCROLLBAR_SIZE, DC->Assets.scrollBar);
+				
+				DC->drawHandlePic(
+					x, 
+					y, 
+					size+1, 
+					SCROLLBAR_SIZE, 
+					DC->Assets.scrollBar
+				);
+				
 				x += size - 1;
-				DC->drawHandlePic(x, y, SCROLLBAR_SIZE, SCROLLBAR_SIZE, DC->Assets.scrollBarArrowRight);
+				
+				DC->drawHandlePic(
+					x, 
+					y, 
+					SCROLLBAR_SIZE, 
+					SCROLLBAR_SIZE, 
+					DC->Assets.scrollBarArrowRight
+				);
+				
 				// thumb
 				thumb = Item_ListBox_ThumbDrawPosition(item);//Item_ListBox_ThumbPosition(item);
+				
 				if (thumb > x - SCROLLBAR_SIZE - 1)
 				{
 					thumb = x - SCROLLBAR_SIZE - 1;
 				}
-				DC->drawHandlePic(thumb, y, SCROLLBAR_SIZE, SCROLLBAR_SIZE, DC->Assets.scrollBarThumb);
+				
+				DC->drawHandlePic(
+					thumb, 
+					y, 
+					SCROLLBAR_SIZE, 
+					SCROLLBAR_SIZE, 
+					DC->Assets.scrollBarThumb
+				);
 			}
 			else if (listPtr->startPos > 0)
 			{
@@ -6677,36 +6929,56 @@ void Item_ListBox_Paint(itemDef_t *item)
 			// fit = 0;
 			x = item->window.rect.x + 1;
 			y = item->window.rect.y + 1;
+			
 			for (i = listPtr->startPos; i < count; i++)
 			{
 				// always draw at least one
 				// which may overdraw the box if it is too small for the element
 				image = DC->feederItemImage(item->special, i);
+				
 				if (image)
 				{
 					if (item->window.flags & WINDOW_PLAYERCOLOR)
 					{
 						vec4_t	color;
+						
 						color[0] = ui_char_color_red.integer/255.0f;
 						color[1] = ui_char_color_green.integer/255.0f;
 						color[2] = ui_char_color_blue.integer/255.0f;
 						color[3] = 1;
+						
 						ui.R_SetColor(color);
 					}
-					DC->drawHandlePic(x+1, y+1, listPtr->elementWidth - 2, listPtr->elementHeight - 2, image);
+					
+					DC->drawHandlePic(
+						x+1, 
+						y+1, 
+						listPtr->elementWidth - 2, 
+						listPtr->elementHeight - 2, 
+						image
+					);
 				}
 
 				if (i == item->cursorPos)
 				{
-					DC->drawRect(x, y, listPtr->elementWidth-1, listPtr->elementHeight-1, item->window.borderSize, item->window.borderColor);
+					DC->drawRect(
+						x, 
+						y, 
+						listPtr->elementWidth-1, 
+						listPtr->elementHeight-1, 
+						item->window.borderSize, 
+						item->window.borderColor
+					);
 				}
 
 				size -= listPtr->elementWidth;
+				
 				if (size < listPtr->elementWidth)
 				{
 					listPtr->drawPadding = size; //listPtr->elementWidth - size;
 					break;
 				}
+
 				x += listPtr->elementWidth;
 				listPtr->endPos++;
 				// fit++;
@@ -6725,25 +6997,52 @@ void Item_ListBox_Paint(itemDef_t *item)
 			// draw scrollbar to right side of the window
 			x = item->window.rect.x + item->window.rect.w - SCROLLBAR_SIZE - 1;
 			y = item->window.rect.y + 1;
-			DC->drawHandlePic(x, y, SCROLLBAR_SIZE, SCROLLBAR_SIZE, DC->Assets.scrollBarArrowUp);
+			
+			DC->drawHandlePic(
+				x, 
+				y, 
+				SCROLLBAR_SIZE, 
+				SCROLLBAR_SIZE, 
+				DC->Assets.scrollBarArrowUp
+			);
+			
 			y += SCROLLBAR_SIZE - 1;
 
 			listPtr->endPos = listPtr->startPos;
 			size = item->window.rect.h - (SCROLLBAR_SIZE * 2);
-			DC->drawHandlePic(x, y, SCROLLBAR_SIZE, size+1, DC->Assets.scrollBar);
+			
+			DC->drawHandlePic( 
+				x, 
+				y, 
+				SCROLLBAR_SIZE, 
+				size+1, 
+				DC->Assets.scrollBar
+			);
+			
 			y += size - 1;
-			DC->drawHandlePic(x, y, SCROLLBAR_SIZE, SCROLLBAR_SIZE, DC->Assets.scrollBarArrowDown);
+			
+			DC->drawHandlePic(
+				x, 
+				y, 
+				SCROLLBAR_SIZE, 
+				SCROLLBAR_SIZE, 
+				DC->Assets.scrollBarArrowDown
+			);
+
 			// thumb
 			thumb = Item_ListBox_ThumbDrawPosition(item);//Item_ListBox_ThumbPosition(item);
+			
 			if (thumb > y - SCROLLBAR_SIZE - 1)
 			{
 				thumb = y - SCROLLBAR_SIZE - 1;
 			}
+
 			DC->drawHandlePic(x, thumb, SCROLLBAR_SIZE, SCROLLBAR_SIZE, DC->Assets.scrollBarThumb);
 		}
 //JLF end
 		// adjust size for item painting
 		size = item->window.rect.h - 2;
+
 		if (listPtr->elementStyle == LISTBOX_IMAGE)
 		{
 			// fit = 0;
@@ -6755,23 +7054,39 @@ void Item_ListBox_Paint(itemDef_t *item)
 				// always draw at least one
 				// which may overdraw the box if it is too small for the element
 				image = DC->feederItemImage(item->special, i);
+				
 				if (image)
 				{
-					DC->drawHandlePic(x+1, y+1, listPtr->elementWidth - 2, listPtr->elementHeight - 2, image);
+					DC->drawHandlePic( 
+						x+1, 
+						y+1, 
+						listPtr->elementWidth - 2, 
+						listPtr->elementHeight - 2, 
+						image 
+					);
 				}
 
 				if (i == item->cursorPos)
 				{
-					DC->drawRect(x, y, listPtr->elementWidth - 1, listPtr->elementHeight - 1, item->window.borderSize, item->window.borderColor);
+					DC->drawRect( 
+						x, 
+						y, 
+						listPtr->elementWidth - 1, 
+						listPtr->elementHeight - 1, 
+						item->window.borderSize, 
+						item->window.borderColor 
+					);
 				}
 
 				listPtr->endPos++;
 				size -= listPtr->elementHeight;
+				
 				if (size < listPtr->elementHeight)
 				{
 					listPtr->drawPadding = listPtr->elementHeight - size;
 					break;
 				}
+
 				y += listPtr->elementHeight;
 				// fit++;
 			}
@@ -6791,9 +7106,11 @@ void Item_ListBox_Paint(itemDef_t *item)
 				if (listPtr->numColumns > 0)
 				{
 					int j;
+					
 					for (j = 0; j < listPtr->numColumns; j++)
 					{
 						text = DC->feederItemText(item->special, i, j, &optionalImage);
+						
 						if (text[0]=='@')
 						{
 							text = SE_GetString( &text[1] );
@@ -6801,7 +7118,13 @@ void Item_ListBox_Paint(itemDef_t *item)
 
 						if (optionalImage >= 0)
 						{
-							DC->drawHandlePic(x + 4 + listPtr->columnInfo[j].pos, y - 1 + listPtr->elementHeight / 2, listPtr->columnInfo[j].width, listPtr->columnInfo[j].width, optionalImage);
+							DC->drawHandlePic( 
+								x + 4 + listPtr->columnInfo[j].pos, 
+								y - 1 + listPtr->elementHeight / 2, 
+								listPtr->columnInfo[j].width, 
+								listPtr->columnInfo[j].width, 
+								optionalImage 
+							);
 						}
 						else if (text)
 						{
@@ -6818,11 +7141,20 @@ void Item_ListBox_Paint(itemDef_t *item)
 								color = &item->window.foreColor;
 							}
 
-
 							int textyOffset;
+
 							textyOffset = 0;
 
-							DC->drawText(x + 4 + listPtr->columnInfo[j].pos, y + listPtr->elementHeight+ textyOffset, item->textscale, *color, text, listPtr->columnInfo[j].maxChars, item->textStyle, item->font);
+							DC->drawText( 
+								x + 4 + listPtr->columnInfo[j].pos, 
+								y + listPtr->elementHeight + textyOffset, 
+								item->textscale, 
+								*color, 
+								text, 
+								listPtr->columnInfo[j].maxChars, 
+								item->textStyle, 
+								item->font 
+							);
 						}
 					}
 				}
@@ -6830,13 +7162,23 @@ void Item_ListBox_Paint(itemDef_t *item)
 				{
 
 					text = DC->feederItemText(item->special, i, 0, &optionalImage);
+					
 					if (optionalImage >= 0)
 					{
-						//DC->drawHandlePic(x + 4 + listPtr->elementHeight, y, listPtr->columnInfo[j].width, listPtr->columnInfo[j].width, optionalImage);
+						//DC->drawHandlePic( x + 4 + listPtr->elementHeight, y, listPtr->columnInfo[j].width, listPtr->columnInfo[j].width, optionalImage);
 					}
 					else if (text)
 					{
-						DC->drawText(x + 4, y + listPtr->elementHeight, item->textscale, item->window.foreColor, text, 0, item->textStyle, item->font);
+						DC->drawText( 
+							x + 4, 
+							y + listPtr->elementHeight, 
+							item->textscale, 
+							item->window.foreColor, 
+							text, 
+							0, 
+							item->textStyle, 
+							item->font 
+						);
 					}
 
 				}
@@ -6844,15 +7186,23 @@ void Item_ListBox_Paint(itemDef_t *item)
 				// The chosen text
 				if (i == item->cursorPos)
 				{
-					DC->fillRect(x + 2, y + listPtr->elementHeight + 2, item->window.rect.w - SCROLLBAR_SIZE - 4, listPtr->elementHeight+2, item->window.outlineColor);
+					DC->fillRect( 
+						x + 2, 
+						y + listPtr->elementHeight + 2, 
+						item->window.rect.w - SCROLLBAR_SIZE - 4, 
+						listPtr->elementHeight+2, 
+						item->window.outlineColor 
+					);
 				}
 
 				size -= listPtr->elementHeight;
+				
 				if (size < listPtr->elementHeight)
 				{
 					listPtr->drawPadding = listPtr->elementHeight - size;
 					break;
 				}
+
 				listPtr->endPos++;
 				y += listPtr->elementHeight;
 				// fit++;
@@ -6866,14 +7216,17 @@ void Item_ListBox_Paint(itemDef_t *item)
 BindingIDFromName
 =================
 */
-int BindingIDFromName( const char *name ) {
+int BindingIDFromName( const char *name ) 
+{
 	size_t i;
 
 	// iterate each command, set its default binding
-	for ( i = 0; i < g_bindCount; i++ ) {
+	for ( i = 0; i < g_bindCount; i++ ) 
+	{
 		if ( !Q_stricmp( name, g_bindCommands[i] ) )
 			return i;
 	}
+
 	return -1;
 }
 
@@ -6884,20 +7237,25 @@ char g_nameBind[96];
 BindingFromName
 =================
 */
-void BindingFromName( const char *cvar ) {
+void BindingFromName( const char *cvar ) 
+{
 	size_t	i;
 	int		b1, b2;
 	char	sOR[32];
 
 	// iterate each command, set its default binding
-	for ( i=0; i < g_bindCount; i++ ) {
-		if ( !Q_stricmp(cvar, g_bindCommands[i] ) ) {
+	for ( i=0; i < g_bindCount; i++ ) 
+	{
+		if ( !Q_stricmp(cvar, g_bindCommands[i] ) ) 
+		{
 			b2 = g_bindKeys[i][1];
 			b1 = g_bindKeys[i][0];
+
 			if ( b1 == -1 )
 				break;
 
-			if ( b2 != -1 ) {
+			if ( b2 != -1 ) 
+			{
 				char keyname[2][32];
 
 				DC->keynumToStringBuf( b1, keyname[0], sizeof( keyname[0] ) );
@@ -6913,13 +7271,15 @@ void BindingFromName( const char *cvar ) {
 
 				Com_sprintf( g_nameBind, sizeof( g_nameBind ), "%s %s %s", keyname[0], sOR, keyname[1] );
 			}
-			else {
+			else 
+			{
 				DC->keynumToStringBuf( b1, g_nameBind, sizeof( g_nameBind ) );
 // do NOT do this or it corrupts asian text!!!					Q_strupr(g_nameBind);
 			}
 			return;
 		}
 	}
+
 	Q_strncpyz( g_nameBind, "???", sizeof( g_nameBind ) );
 }
 
@@ -6960,6 +7320,7 @@ void Item_Bind_Paint(itemDef_t *item)
 			lowLight[2] = 0.8f * parent->focusColor[2];
 			lowLight[3] = 0.8f * parent->focusColor[3];
 		}
+
 		LerpColor(parent->focusColor,lowLight,newColor,0.5+0.5*sin((float)(DC->realTime / PULSE_DIVISOR)));
 	}
 	else
@@ -6986,17 +7347,35 @@ void Item_Bind_Paint(itemDef_t *item)
 
 		// Try to adjust it's y placement if the scale has changed.
 		yAdj = 0;
+
 		if (textScale != item->textscale)
 		{
 			textHeight = DC->textHeight(g_nameBind, item->textscale, uiInfo.uiDC.Assets.qhMediumFont);
 			yAdj = textHeight - DC->textHeight(g_nameBind, textScale, uiInfo.uiDC.Assets.qhMediumFont);
 		}
 
-		DC->drawText(startingXPos, item->textRect.y + yAdj, textScale, newColor, g_nameBind, maxChars/*item->textRect.w*/, item->textStyle, item->font);
+		DC->drawText( 
+			startingXPos, 
+			item->textRect.y + yAdj, 
+			textScale, 
+			newColor, 
+			g_nameBind, 
+			maxChars/*item->textRect.w*/, 
+			item->textStyle, 
+			item->font 
+		);
 	}
 	else
 	{
-		DC->drawText(item->textRect.x, item->textRect.y, item->textscale, newColor, (value != 0) ? "FIXME 1" : "FIXME 0", maxChars/*item->textRect.w*/, item->textStyle, item->font);
+		DC->drawText( 
+			item->textRect.x, 
+			item->textRect.y, 
+			item->textscale, 
+			newColor, 
+			(value != 0) ? "FIXME 1" : "FIXME 0", maxChars/*item->textRect.w*/, 
+			item->textStyle, 
+			item->font 
+		);
 	}
 }
 
@@ -7008,11 +7387,13 @@ void UI_ScaleModelAxis(refEntity_t	*ent)
 			VectorScale( ent->axis[0], ent->modelScale[0] , ent->axis[0] );
 			ent->nonNormalizedAxes = qtrue;
 		}
+
 		if (ent->modelScale[1] && ent->modelScale[1] != 1.0f)
 		{
 			VectorScale( ent->axis[1], ent->modelScale[1] , ent->axis[1] );
 			ent->nonNormalizedAxes = qtrue;
 		}
+
 		if (ent->modelScale[2] && ent->modelScale[2] != 1.0f)
 		{
 			VectorScale( ent->axis[2], ent->modelScale[2] , ent->axis[2] );
@@ -7029,9 +7410,9 @@ Item_Model_Paint
 extern int	s_entityWavVol[MAX_GENTITIES];	//from snd_dma.cpp
 void UI_TalkingHead(itemDef_t *item)
 {
-//	static int facial_blink = DC->realTime + Q_flrand(4000.0, 8000.0);
+	//static int facial_blink = DC->realTime + Q_flrand(4000.0, 8000.0);
 	static int facial_timer = DC->realTime + Q_flrand(10000.0, 30000.0);
-//	static animNumber_t facial_anim = FACE_ALERT;
+	//static animNumber_t facial_anim = FACE_ALERT;
 	int anim = -1;
 
 	//are we blinking?
@@ -7048,6 +7429,7 @@ void UI_TalkingHead(itemDef_t *item)
 		if (facial_blink < DC->realTime)// but should we start ?
 		{
 			CG_G2SetHeadBlink( cent, qtrue );
+
 			if (facial_blink == 1)
 			{//requested to stay shut by SET_FACEEYESCLOSED
 				facial_blink = -(DC->realTime + 99999999.0f);// set blink timer
@@ -7063,16 +7445,19 @@ void UI_TalkingHead(itemDef_t *item)
 	if (s_entityWavVol[0] > 0)	// if we aren't talking, then it will be 0, -1 for talking but paused
 	{
 		anim = FACE_TALK1 + s_entityWavVol[0]-1;
+
 		if( anim > FACE_TALK4 )
 		{
 			anim = FACE_TALK4;
 		}
+
 		// reset timers so we don't start right away after talking
 		facial_timer = DC->realTime + Q_flrand(2000.0, 7000.0);
 	}
 	else if (s_entityWavVol[0] == -1)
 	{// talking, but silent
 		anim = FACE_TALK0;
+
 		// reset timers so we don't start right away after talking
 		facial_timer = DC->realTime + Q_flrand(2000.0, 7000.0);
 	}
@@ -7103,10 +7488,11 @@ void UI_TalkingHead(itemDef_t *item)
 */
 	if (facial_timer < DC->realTime)
 	{//restart the base anim
-//		modelDef_t *modelPtr = (modelDef_t*)item->typeData;
+		//modelDef_t *modelPtr = (modelDef_t*)item->typeData;
 		//ItemParse_model_g2anim_go( item, "BOTH_STAND5IDLE1" );
-//		facial_timer = DC->realTime + Q_flrand(2000.0, 7000.0) + DC->g2hilev_SetAnim(&item->ghoul2[0], "model_root", modelPtr->g2anim, qtrue);
+		//facial_timer = DC->realTime + Q_flrand(2000.0, 7000.0) + DC->g2hilev_SetAnim(&item->ghoul2[0], "model_root", modelPtr->g2anim, qtrue);
 	}
+
 	if (anim != -1)
 	{
 		DC->g2hilev_SetAnim(&item->ghoul2[0], "face", anim, qfalse);

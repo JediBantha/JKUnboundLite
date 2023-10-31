@@ -4493,13 +4493,15 @@ static powerEnum_t powerEnums[MAX_POWER_ENUMS] =
 	{ "speed",			FP_SPEED },
 	{ "push",			FP_PUSH },
 	{ "pull",			FP_PULL },
-	{ "sabthrow",		FP_SABERTHROW },
-	{ "sabdef",			FP_SABER_DEFENSE },
-	{ "saboff",			FP_SABER_OFFENSE },
 
 #ifndef JK2_MODE
 	{ "sense",			FP_SEE },
 #endif // !JK2_MODE
+
+				// Lightsaber
+	{ "sabthrow",		FP_SABERTHROW },
+	{ "sabdef",			FP_SABER_DEFENSE },
+	{ "saboff",			FP_SABER_OFFENSE },
 
 				// Dark powers
 #ifndef JK2_MODE
@@ -4515,6 +4517,12 @@ static powerEnum_t powerEnums[MAX_POWER_ENUMS] =
 	{ "grip",			FP_GRIP },
 };
 
+static void UI_DrawForcePowerLevelNumber(rectDef_t *rect, float scale, vec4_t color, int textStyle, int val, int iMenuFont)
+{
+	char *s;
+
+	Text_Paint(rect->x, rect->y, scale, color, s, 0, textStyle, iMenuFont);
+}
 
 // Find the index to the Force Power in powerEnum array
 static qboolean UI_GetForcePowerIndex ( const char *forceName, short *forcePowerI )
@@ -4578,11 +4586,23 @@ static void UI_InitAllocForcePowers ( const char *forceName )
 	if (item)
 	{
 		char itemGraphic[128];
-		Com_sprintf (itemGraphic, sizeof(itemGraphic), "gfx/menus/hex_pattern_%d",forcelevel >= threshold ? minThreshold : forcelevel);
+		const char *levelText = "gfx/menus/hex_pattern_%d";
+		
+		if ( forcelevel > 3 )
+		{
+			levelText = "gfx/menus/hex_pattern_3";
+		}
+
+		Com_sprintf(
+			itemGraphic, 
+			sizeof(itemGraphic), 
+			levelText, forcelevel >= threshold ? minThreshold : forcelevel
+		);
+		
 		item->window.background = ui.R_RegisterShaderNoMip(itemGraphic);
 
 		// If maxed out on power - don't allow update
-		if (forcelevel>=3)
+		if (forcelevel>=threshold)
 		{
 			Com_sprintf (itemName, sizeof(itemName), "%s_fbutton", powerEnums[forcePowerI].title);
 			item = (itemDef_s *) Menu_FindItemByName(menu, itemName);
@@ -4713,9 +4733,9 @@ void UI_SetItemColor(itemDef_t *item,const char *itemname,const char *name,vec4_
 
 static void UI_SetHexPicLevel( const menuDef_t	*menu,const int forcePowerI,const int powerLevel, const qboolean	goldFlag )
 {
-	char itemName[128];
+	char		itemName[128];
 	itemDef_t	*item;
-	int	threshold = (Q3_UI_INFINITE - 24), minThreshold = (threshold - 1);//4 ? 3
+	int			threshold = (Q3_UI_INFINITE - 24), minThreshold = (threshold - 1);//4 ? 3
 
 	// Find proper hex picture on menu
 	Com_sprintf (itemName, sizeof(itemName), "%s_hexpic", powerEnums[forcePowerI].title);
@@ -4724,20 +4744,38 @@ static void UI_SetHexPicLevel( const menuDef_t	*menu,const int forcePowerI,const
 	// Now give it the proper hex graphic
 	if (item)
 	{
-		char itemGraphic[128];
+		char		itemGraphic[128];
+		const char	*levelText = "gfx/menus/hex_pattern_%d";
+		const char	*levelTextGold = "gfx/menus/hex_pattern_%d_gold";
+		
+		if ( powerLevel > 3 )
+		{
+			levelText = "gfx/menus/hex_pattern_3";
+			levelTextGold = "gfx/menus/hex_pattern_4_gold";
+		}
+
 		if (goldFlag)
 		{
-			Com_sprintf (itemGraphic, sizeof(itemGraphic), "gfx/menus/hex_pattern_%d_gold",powerLevel >= threshold ? minThreshold : powerLevel);
+			Com_sprintf(
+				itemGraphic, 
+				sizeof(itemGraphic), 
+				levelTextGold, powerLevel >= threshold ? minThreshold : powerLevel
+			);
 		}
 		else
 		{
-			Com_sprintf (itemGraphic, sizeof(itemGraphic),  "gfx/menus/hex_pattern_%d",powerLevel >= threshold ? minThreshold : powerLevel);
+			Com_sprintf(
+				itemGraphic, 
+				sizeof(itemGraphic),  
+				levelText, powerLevel >= threshold ? minThreshold : powerLevel
+			);
 		}
 
 		item->window.background = ui.R_RegisterShaderNoMip(itemGraphic);
 
 		Com_sprintf (itemName, sizeof(itemName), "%s_fbutton", powerEnums[forcePowerI].title);
 		item = (itemDef_s *) Menu_FindItemByName((menuDef_t	*)menu, itemName);
+
 		if (item)
 		{
 			if (goldFlag)
